@@ -246,12 +246,12 @@ async function loadCollection() {
 
     // Construire un set complet (toutes les cartes de toutes les séries)
     const allPossible = [];
-    for (const [sid, cards] of Object.entries(WANKUL_DATA.cards)) {
-      for (const card of cards) {
-        // Version normale
-        allPossible.push({ ...card, seriesId: sid, isFoil: false, key: card.id });
-        // Version foil (toujours présente dans le codex)
-        allPossible.push({ ...card, seriesId: sid, isFoil: true, key: `${card.id}-foil` });
+    for (const [sid, rarityGroups] of Object.entries(POOL)) {
+      for (const [rarity, cardList] of Object.entries(rarityGroups)) {
+        for (const card of cardList) {
+          allPossible.push({ ...card, seriesId: sid, rarity, isFoil: false, key: card.id });
+          allPossible.push({ ...card, seriesId: sid, rarity, isFoil: true, key: `${card.id}-foil` });
+        }
       }
     }
 
@@ -274,7 +274,7 @@ async function loadCollection() {
 function renderStats(owned) {
   const total = allCards.filter(c => !c.isFoil).length;
   const ownedCount = owned.length;
-  const foilCount = owned.filter(o => o.card_id.endsWith('-foil')).length;
+  const foilCount = owned.filter(o => o.card_id && o.card_id.endsWith('-foil')).length;
   const totalQty = owned.reduce((s,o) => s + (o.quantity||1), 0);
   const legendCount = owned.filter(o => o.rarity === 'legendaire').length;
 
@@ -385,7 +385,7 @@ function renderCards() {
     for (const rid of RARITY_ORDER) {
       const group = cards.filter(c => c.rarity === rid);
       if (group.length === 0) continue;
-      const r = WANKUL_DATA.rarities.find(x => x.id === rid);
+      const r = RARITIES[rid];
       const ownedInGroup = group.filter(c => c.owned).length;
 
       const header = document.createElement('div');
@@ -410,7 +410,7 @@ function renderCards() {
     const grid = document.createElement('div');
     grid.className = `cards-grid${viewMode === 'list' ? ' list-view' : ''}`;
     const r_map = {};
-    for (const r of WANKUL_DATA.rarities) r_map[r.id] = r;
+    // RARITIES utilisé directement
     for (const card of cards) {
       grid.appendChild(buildCard(card, r_map[card.rarity]));
     }
@@ -419,7 +419,7 @@ function renderCards() {
 }
 
 function buildCard(card, r) {
-  const s = WANKUL_DATA.series.find(x => x.id === card.seriesId);
+  const s = SERIES.find(x => x.id === card.seriesId);
   const el = document.createElement('div');
   el.className = `coll-card${card.isFoil ? ' foil' : ''}${!card.owned ? ' missing' : ''}`;
   el.style.borderColor = card.owned ? (r?.color || '#333') : '#333';
@@ -429,7 +429,10 @@ function buildCard(card, r) {
       <div>
         <div class="card-face" style="background:linear-gradient(135deg,${r?.color}22,${r?.color}44)">
           ${card.isFoil ? '<div class="foil-layer"></div>' : ''}
-          <span style="position:relative;z-index:1">${card.owned ? card.emoji : '❓'}</span>
+          ${card.owned && card.img
+            ? `<img src="${card.img}" alt="${card.name}" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+            : ''}
+          <span style="position:relative;z-index:1;${card.owned && card.img ? 'display:none' : ''}">${card.owned ? (card.emoji||'🃏') : '❓'}</span>
         </div>
         <div class="card-body">
           <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
@@ -449,7 +452,10 @@ function buildCard(card, r) {
     el.innerHTML = `
       <div class="card-face" style="background:linear-gradient(135deg,${r?.color}22,${r?.color}44)">
         ${card.isFoil ? '<div class="foil-layer"></div>' : ''}
-        <span style="position:relative;z-index:1">${card.owned ? card.emoji : '❓'}</span>
+        ${card.owned && card.img
+          ? `<img src="${card.img}" alt="${card.name}" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+          : ''}
+        <span style="position:relative;z-index:1;${card.owned && card.img ? 'display:none' : ''}">${card.owned ? (card.emoji||'🃏') : '❓'}</span>
       </div>
       <div class="card-body">
         <div class="card-rarity-badge" style="background:${r?.color}22;color:${r?.color};border:1px solid ${r?.color}44">${r?.label}</div>

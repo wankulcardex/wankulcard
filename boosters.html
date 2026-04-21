@@ -36,12 +36,12 @@
   /* ══════════════════════════════
      ÉCRAN 1 : CHOIX SÉRIE
   ══════════════════════════════ */
-  #screenSelect{min-height:100vh;padding:80px 2rem 4rem;display:flex;flex-direction:column;align-items:center;}
+  #screenSelect{min-height:100vh;padding:80px 2rem 4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;}
   .sel-title{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:3px;margin:2.5rem 0 .5rem;text-align:center;}
   .sel-title span{color:var(--red);}
   .sel-sub{color:var(--muted);margin-bottom:3rem;font-size:.9rem;}
 
-  .series-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem;width:100%;max-width:1100px;}
+  .series-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem;width:100%;max-width:1100px;justify-items:center;} .series-grid .serie-card{width:100%;}
   .serie-card{background:var(--card-bg);border:2px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:all .3s;position:relative;display:block;text-decoration:none;color:var(--text);}
   .serie-card:hover{transform:translateY(-6px);border-color:var(--sc);box-shadow:0 20px 50px rgba(0,0,0,.5);}
   .serie-img-wrap{height:220px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0a0a;position:relative;}
@@ -114,6 +114,8 @@
   .big-card:hover{transform:translateY(-4px) scale(1.02);}
   .big-card:active{transform:scale(.98);}
   .big-card-face{height:280px;display:flex;align-items:center;justify-content:center;font-size:8rem;position:relative;overflow:hidden;}
+  .big-card-face img{width:100%;height:100%;object-fit:cover;display:block;}
+  .big-card-face .card-emoji{font-size:8rem;position:relative;z-index:1;}
   .big-card-foil{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.25) 40%,rgba(255,100,200,.25) 50%,rgba(100,200,255,.25) 60%,transparent 80%);animation:foilS 1.5s ease-in-out infinite alternate;}
   @keyframes foilS{from{transform:translateX(-50%)}to{transform:translateX(50%)}}
   .big-card-body{padding:1.25rem 1.5rem;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);}
@@ -156,6 +158,8 @@
   .mcard:hover{transform:translateY(-4px);}
   .mcard.foil{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);}
   .mface{height:110px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;overflow:hidden;}
+  .mface img{width:100%;height:100%;object-fit:cover;display:block;}
+  .mface .card-emoji{font-size:3.5rem;position:relative;z-index:1;}
   .mfoil{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.2) 40%,rgba(255,100,200,.2) 50%,rgba(100,200,255,.2) 60%,transparent 80%);animation:foilS 2s ease-in-out infinite alternate;}
   .mbody{padding:.65rem .75rem;background:var(--dark3);}
   .mbadge{display:inline-block;padding:.1rem .4rem;border-radius:4px;font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem;}
@@ -474,7 +478,10 @@ function showCard(i) {
   el.innerHTML = `
     <div class="big-card-face" style="background:linear-gradient(135deg,${r.color}33,${r.color}66)">
       ${card.isFoil ? '<div class="big-card-foil"></div>' : ''}
-      <span style="position:relative;z-index:1">${card.emoji}</span>
+      ${card.img
+        ? `<img src="${card.img}" alt="${card.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="card-emoji" style="display:none;position:absolute">${card.emoji||'🃏'}</span>`
+        : `<span class="card-emoji">${card.emoji||'🃏'}</span>`
+      }
     </div>
     <div class="big-card-body" style="border-top:3px solid ${r.color}">
       <div class="big-card-rarity" style="color:${r.color}">
@@ -621,7 +628,10 @@ async function goToRecap() {
       el.innerHTML = `
         <div class="mface" style="background:linear-gradient(135deg,${r.color}22,${r.color}44)">
           ${card.isFoil ? '<div class="mfoil"></div>' : ''}
-          <span style="position:relative;z-index:1">${card.emoji}</span>
+          ${card.img
+            ? `<img src="${card.img}" alt="${card.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="card-emoji" style="display:none;position:absolute">${card.emoji||'🃏'}</span>`
+            : `<span class="card-emoji" style="position:relative;z-index:1">${card.emoji||'🃏'}</span>`
+          }
         </div>
         <div class="mbody">
           <div class="mbadge" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}44">${r.label}</div>
