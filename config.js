@@ -15,6 +15,13 @@ async function sbFetch(path, options = {}) {
   const token = getToken();
   const headers = { 'Content-Type':'application/json', 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${token||SUPABASE_ANON_KEY}`, ...options.headers };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { ...options, headers });
+  if (res.status === 401) {
+    // JWT expiré → on déconnecte et redirige
+    localStorage.removeItem('wankuldex_token');
+    localStorage.removeItem('wankuldex_user');
+    window.location.href = 'index.html';
+    return null;
+  }
   if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.message||`HTTP ${res.status}`); }
   return res.status === 204 ? null : res.json();
 }
