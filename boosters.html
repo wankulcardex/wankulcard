@@ -249,82 +249,6 @@
 
 <script>
 // ══════════════════════════════════════
-//  DONNÉES
-// ══════════════════════════════════════
-const SERIES = [
-  {id:'origins', name:'Origins',  season:'Saison 1', color:'#FF6B35', img:'booster/wankulS1.png', cards:182},
-  {id:'campus',  name:'Campus',   season:'Saison 2', color:'#0099FF', img:'booster/wankulS2.png', cards:162},
-  {id:'battle',  name:'Battle',   season:'Saison 3', color:'#E8001D', img:'booster/wankulS3.png', cards:185},
-  {id:'saison4', name:'Saison 4', season:'Saison 4', color:'#9B59B6', img:'booster/wankulS4.png', cards:100},
-];
-
-const R = {
-  terrain:            {label:'Terrain',          color:'#8D6E63'},
-  commune:            {label:'Commune',           color:'#9E9E9E'},
-  'peu-commune':      {label:'Peu Commune',       color:'#4CAF50'},
-  rare:               {label:'Rare',              color:'#2196F3'},
-  'super-rare':       {label:'Super Rare',        color:'#9B59B6'},
-  'ultra-rare-holo1': {label:'Ultra Rare Holo 1', color:'#FFD600'},
-  'ultra-rare-holo2': {label:'Ultra Rare Holo 2', color:'#FF9800'},
-  'legendaire-bronze':{label:'Légendaire Bronze', color:'#CD7F32'},
-  'legendaire-argent':{label:'Légendaire Argent', color:'#C0C0C0'},
-  'legendaire-or':    {label:'Légendaire Or',     color:'#FFD700'},
-};
-
-// Structure officielle booster Wankul : 10 cartes
-// 1 Terrain + 4 Communes + 3 Peu Communes + 1 Rare garantie + 1 Gros Slot
-const POOL = {
-  origins:{
-    terrain:[{id:'s1-t01',name:'Studio Wankil',emoji:'🏢'},{id:'s1-t02',name:'Twitch Arena',emoji:'🎮'},{id:'s1-t03',name:'Cuisine Laink',emoji:'🍳'},{id:'s1-t04',name:'Bureau Terracid',emoji:'💻'}],
-    commune:[{id:'s1-c01',name:'Gotaga',emoji:'⭐'},{id:'s1-c02',name:'Lena',emoji:'🌸'},{id:'s1-c03',name:'Domingo',emoji:'🎲'},{id:'s1-c04',name:'Mister V',emoji:'😎'},{id:'s1-c05',name:'Amixem',emoji:'🎬'},{id:'s1-c06',name:'Alphacast',emoji:'🎙️'}],
-    'peu-commune':[{id:'s1-u01',name:'Kameto',emoji:'🦊'},{id:'s1-u02',name:'Maghla',emoji:'🌙'},{id:'s1-u03',name:'Squeezie',emoji:'🎵'},{id:'s1-u04',name:'Michou',emoji:'😁'}],
-    rare:[{id:'s1-r01',name:'ZeratoR',emoji:'💎'},{id:'s1-r02',name:'Sardoche',emoji:'🃏'},{id:'s1-r03',name:'Locklear',emoji:'🎯'},{id:'s1-r04',name:'Ponce',emoji:'🔮'}],
-    'super-rare':[{id:'s1-sr01',name:'Rog',emoji:'🎮'},{id:'s1-sr02',name:'Joueur du Dimanche',emoji:'🕹️'}],
-    'ultra-rare-holo1':[{id:'s1-ur1',name:'Superconeri Holo',emoji:'⚡'}],
-    'ultra-rare-holo2':[{id:'s1-ur2',name:'Superconeri Full Art',emoji:'✨'}],
-    'legendaire-bronze':[{id:'s1-lb',name:'Laink Bronze',emoji:'🥉'}],
-    'legendaire-argent':[{id:'s1-la',name:'Terracid Argent',emoji:'🥈'}],
-    'legendaire-or':[{id:'s1-lo',name:'Laink & Terracid Or',emoji:'🏆'}],
-  },
-  campus:{
-    terrain:[{id:'s2-t01',name:'Amphithéâtre',emoji:'🎓'},{id:'s2-t02',name:'Bibliothèque',emoji:'📚'}],
-    commune:[{id:'s2-c01',name:'Darwin',emoji:'🦋'},{id:'s2-c02',name:'Newton',emoji:'🍎'},{id:'s2-c03',name:'Archimède',emoji:'⚙️'},{id:'s2-c04',name:'Voltaire',emoji:'📜'}],
-    'peu-commune':[{id:'s2-u01',name:'Picasso',emoji:'🖼️'},{id:'s2-u02',name:'Marie Curie',emoji:'⚗️'},{id:'s2-u03',name:'Molière',emoji:'🎭'}],
-    rare:[{id:'s2-r01',name:'Da Vinci',emoji:'🎨'},{id:'s2-r02',name:'Einstein',emoji:'🔬'}],
-    'super-rare':[{id:'s2-sr01',name:'Napoléon',emoji:'👑'},{id:'s2-sr02',name:'Cléopâtre',emoji:'🌺'}],
-    'ultra-rare-holo1':[{id:'s2-ur1',name:'Zeus Holo',emoji:'⚡'}],
-    'ultra-rare-holo2':[{id:'s2-ur2',name:'Zeus Full Art',emoji:'🌩️'}],
-    'legendaire-bronze':[{id:'s2-lb',name:'Laink Campus Bronze',emoji:'🥉'}],
-    'legendaire-argent':[{id:'s2-la',name:'Terracid Campus Argent',emoji:'🥈'}],
-    'legendaire-or':[{id:'s2-lo',name:'Duo Campus Or',emoji:'🏆'}],
-  },
-  battle:{
-    terrain:[{id:'s3-t01',name:'Arène Battle',emoji:'⚔️'},{id:'s3-t02',name:'Terrain JV',emoji:'🎮'}],
-    commune:[{id:'s3-c01',name:'Luffy',emoji:'⚓'},{id:'s3-c02',name:'Eren',emoji:'⚡'},{id:'s3-c03',name:'Naruto',emoji:'🍃'},{id:'s3-c04',name:'Goku',emoji:'💪'}],
-    'peu-commune':[{id:'s3-u01',name:'Sonic',emoji:'💨'},{id:'s3-u02',name:'Link',emoji:'🗡️'},{id:'s3-u03',name:'Kirby',emoji:'🩷'}],
-    rare:[{id:'s3-r01',name:'Mario',emoji:'🍄'},{id:'s3-r02',name:'Pikachu',emoji:'⚡'}],
-    'super-rare':[{id:'s3-sr01',name:'Mecha Terracid',emoji:'🤖'},{id:'s3-sr02',name:'Laink Battle',emoji:'⚔️'}],
-    'ultra-rare-holo1':[{id:'s3-ur1',name:'Gold Laink Holo',emoji:'✨'}],
-    'ultra-rare-holo2':[{id:'s3-ur2',name:'Gold Terracid Full Art',emoji:'💫'}],
-    'legendaire-bronze':[{id:'s3-lb',name:'Terracid Battle Bronze',emoji:'🥉'}],
-    'legendaire-argent':[{id:'s3-la',name:'Laink Battle Argent',emoji:'🥈'}],
-    'legendaire-or':[{id:'s3-lo',name:'Duo Battle Or',emoji:'🏆'}],
-  },
-  saison4:{
-    terrain:[{id:'s4-t01',name:'Terrain Futur',emoji:'🌌'},{id:'s4-t02',name:'Arène S4',emoji:'🚀'}],
-    commune:[{id:'s4-c01',name:'Perso A',emoji:'👤'},{id:'s4-c02',name:'Perso B',emoji:'👥'},{id:'s4-c03',name:'Perso C',emoji:'🧑'},{id:'s4-c04',name:'Perso D',emoji:'👨'}],
-    'peu-commune':[{id:'s4-u01',name:'Héros A',emoji:'🦸'},{id:'s4-u02',name:'Héros B',emoji:'🦹'},{id:'s4-u03',name:'Héros C',emoji:'🧙'}],
-    rare:[{id:'s4-r01',name:'Rare A',emoji:'💠'},{id:'s4-r02',name:'Rare B',emoji:'🔷'}],
-    'super-rare':[{id:'s4-sr01',name:'SR A',emoji:'🌟'},{id:'s4-sr02',name:'SR B',emoji:'⭐'}],
-    'ultra-rare-holo1':[{id:'s4-ur1',name:'Ultra Holo 1',emoji:'🌈'}],
-    'ultra-rare-holo2':[{id:'s4-ur2',name:'Ultra Holo 2',emoji:'✨'}],
-    'legendaire-bronze':[{id:'s4-lb',name:'Légende Bronze S4',emoji:'🥉'}],
-    'legendaire-argent':[{id:'s4-la',name:'Légende Argent S4',emoji:'🥈'}],
-    'legendaire-or':[{id:'s4-lo',name:'Légende Or S4',emoji:'🏆'}],
-  },
-};
-
-// ══════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════
 let selId = null;
@@ -465,7 +389,7 @@ async function clickBooster() {
 // ══════════════════════════════════════
 function showCard(i) {
   const card = cards[i];
-  const r = R[card.slot] || R.commune;
+  const r = RARITIES[card.slot] || R.commune;
   const wrap = document.getElementById('bigCardWrap');
   const isLast = (i === cards.length - 1);
 
@@ -589,7 +513,7 @@ async function goToRecap() {
   let statsHtml = '';
   for (const slot of order) {
     if (!cnt[slot]) continue;
-    const r = R[slot];
+    const r = RARITIES[slot];
     statsHtml += `<div class="rstat"><div class="rstat-n" style="color:${r.color}">${cnt[slot]}</div><div class="rstat-l">${r.label}</div></div>`;
   }
   if (foils) statsHtml += `<div class="rstat"><div class="rstat-n" style="color:#FFD700">${foils}</div><div class="rstat-l">Foil ✨</div></div>`;
@@ -620,7 +544,7 @@ async function goToRecap() {
     grid.className = 'rsec-grid';
 
     for (const card of secCards) {
-      const r = R[card.slot] || R.commune;
+      const r = RARITIES[card.slot] || R.commune;
       const el = document.createElement('div');
       el.className = 'mcard' + (card.isFoil ? ' foil' : '');
       el.style.borderColor = r.color;
@@ -660,50 +584,20 @@ function chooseSeries() {
 // ══════════════════════════════════════
 //  TIRAGE OFFICIEL (10 cartes)
 // ══════════════════════════════════════
-function drawBooster(sid) {
-  const p = POOL[sid] || POOL.origins;
-  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-  const result = [];
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-  // 1. Terrain
-  result.push({...pick(p.terrain), slot:'terrain', isFoil: Math.random()<0.05});
-
-  // 2-5. Communes (4)
-  for (let i=0;i<4;i++)
-    result.push({...pick(p.commune), slot:'commune', isFoil: Math.random()<0.02});
-
-  // 6-8. Peu Communes (3)
-  for (let i=0;i<3;i++)
-    result.push({...pick(p['peu-commune']), slot:'peu-commune', isFoil: Math.random()<0.04});
-
-  // 9. Rare garantie (peut upgrade)
-  const ru = Math.random();
-  const rSlot = ru<0.02?'super-rare':ru<0.04?'ultra-rare-holo1':'rare';
-  result.push({...pick(p[rSlot]||p.rare), slot:rSlot, isFoil: ru<0.01});
-
-  // 10. Gros slot 🔥
-  const b = Math.random();
-  let bSlot;
-  if      (b<0.01)  bSlot='legendaire-or';
-  else if (b<0.025) bSlot='legendaire-argent';
-  else if (b<0.05)  bSlot='legendaire-bronze';
-  else if (b<0.12)  bSlot='ultra-rare-holo2';
-  else if (b<0.22)  bSlot='ultra-rare-holo1';
-  else if (b<0.40)  bSlot='super-rare';
-  else              bSlot='rare';
-  result.push({...pick(p[bSlot]||p.rare), slot:bSlot, isFoil:b<0.05||Math.random()<0.1, isBig:true});
-
-  return result;
+function showToast(msg, hot=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (hot?' hot':'') + ' show';
+  setTimeout(() => t.classList.remove('show'), 4000);
 }
 
-// ══════════════════════════════════════
-//  UTILS
-// ══════════════════════════════════════
 function slotDesc(slot) {
   return {
-    terrain:'🏔️ Carte Terrain — toujours en 1ère position',
-    commune:'⚪ Carte Commune',
-    'peu-commune':'🟢 Carte Peu Commune',
+    terrain:'🏔️ Terrain — 1ère carte',
+    commune:'⚪ Commune',
+    'peu-commune':'🟢 Peu Commune',
     rare:'💙 Rare garantie',
     'super-rare':'💜 Super Rare',
     'ultra-rare-holo1':'⭐ Ultra Rare Holo 1',
@@ -714,15 +608,6 @@ function slotDesc(slot) {
   }[slot] || slot;
 }
 
-function flashBg(color) {
-  const bg = document.getElementById('openBg');
-  bg.style.background = `radial-gradient(ellipse at center, ${color}45 0%, var(--dark) 60%)`;
-  setTimeout(() => {
-    const s = SERIES.find(x => x.id === selId);
-    if (s) bg.style.background = `radial-gradient(ellipse at center, ${s.color}18 0%, var(--dark) 65%)`;
-  }, 1800);
-}
-
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function showToast(msg, hot=false) {
@@ -730,6 +615,16 @@ function showToast(msg, hot=false) {
   t.textContent = msg;
   t.className = 'toast' + (hot?' hot':'') + ' show';
   setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+function flashBg(color) {
+  const bg = document.getElementById('openBg');
+  if (!bg) return;
+  bg.style.background = `radial-gradient(ellipse at center, ${color}45 0%, var(--dark) 60%)`;
+  setTimeout(() => {
+    const s = SERIES.find(x => x.id === selId);
+    if (s && bg) bg.style.background = `radial-gradient(ellipse at center, ${s.color}18 0%, var(--dark) 65%)`;
+  }, 1800);
 }
 </script>
 </body>
