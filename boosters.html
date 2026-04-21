@@ -9,8 +9,7 @@
 <style>
   :root{--red:#E8001D;--yellow:#FFD600;--dark:#0D0D0D;--dark2:#141414;--dark3:#1E1E1E;--card-bg:#1A1A1A;--text:#F5F5F5;--muted:#666;--border:#2A2A2A;}
   *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{height:100%;}
-  body{background:var(--dark);color:var(--text);font-family:'Nunito',sans-serif;overflow-x:hidden;}
+  body{background:var(--dark);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
 
   /* NAV */
   nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:64px;background:rgba(13,13,13,.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--red);}
@@ -21,79 +20,71 @@
   .nav-links a:hover{color:var(--text);background:var(--dark3);}
   .nav-links a.active{color:var(--yellow);}
   .nav-user{display:flex;align-items:center;gap:.75rem;font-size:.85rem;font-weight:700;color:var(--muted);}
-  .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1.2rem;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.85rem;cursor:pointer;transition:all .2s;text-decoration:none;border:none;}
+  .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.4rem;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .2s;text-decoration:none;border:none;}
   .btn-outline{background:transparent;border:2px solid var(--border);color:var(--text);}
   .btn-outline:hover{border-color:var(--yellow);color:var(--yellow);}
   .btn-primary{background:var(--red);color:white;}
-  .btn-primary:hover{background:#c0001a;}
-  .btn-primary:disabled{background:#333;color:#555;cursor:not-allowed;}
+  .btn-primary:hover{background:#c0001a;transform:translateY(-1px);}
 
-  /* ═══════════════════════════════
-     ÉCRAN 1 : SÉLECTION SÉRIE
-  ═══════════════════════════════ */
-  #screenSelect{
-    min-height:100vh;padding:80px 2rem 4rem;
-    display:flex;flex-direction:column;align-items:center;
-  }
-  .select-title{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:3px;margin:2.5rem 0 .5rem;text-align:center;}
-  .select-title span{color:var(--red);}
-  .select-sub{color:var(--muted);margin-bottom:3rem;text-align:center;font-size:.95rem;}
+  /* ══════════════════════════════
+     ÉCRAN AUTH
+  ══════════════════════════════ */
+  #screenAuth{display:none;padding:10rem 2rem;text-align:center;}
+  #screenAuth h2{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;margin-bottom:.75rem;}
+  #screenAuth p{color:var(--muted);margin-bottom:1.5rem;}
+
+  /* ══════════════════════════════
+     ÉCRAN 1 : CHOIX SÉRIE
+  ══════════════════════════════ */
+  #screenSelect{min-height:100vh;padding:80px 2rem 4rem;display:flex;flex-direction:column;align-items:center;}
+  .sel-title{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:3px;margin:2.5rem 0 .5rem;text-align:center;}
+  .sel-title span{color:var(--red);}
+  .sel-sub{color:var(--muted);margin-bottom:3rem;font-size:.9rem;}
 
   .series-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem;width:100%;max-width:1100px;}
-  .serie-card{background:var(--card-bg);border:2px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:all .3s;position:relative;}
+  .serie-card{background:var(--card-bg);border:2px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:all .3s;position:relative;display:block;text-decoration:none;color:var(--text);}
   .serie-card:hover{transform:translateY(-6px);border-color:var(--sc);box-shadow:0 20px 50px rgba(0,0,0,.5);}
-  .serie-card.selected{border-color:var(--sc);box-shadow:0 0 0 4px color-mix(in srgb,var(--sc) 30%,transparent);}
-  .serie-img-wrap{height:200px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
-  .serie-img-wrap img{height:100%;object-fit:contain;transition:transform .3s;}
-  .serie-card:hover .serie-img-wrap img{transform:scale(1.08);}
-  .serie-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,var(--card-bg),transparent 60%);}
-  .serie-fallback{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:color-mix(in srgb,var(--sc) 60%,transparent);}
+  .serie-img-wrap{height:220px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0a0a;position:relative;}
+  .serie-img-wrap img{height:100%;width:100%;object-fit:contain;transition:transform .3s;padding:1rem;}
+  .serie-card:hover .serie-img-wrap img{transform:scale(1.07);}
+  .serie-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,var(--card-bg) 0%,transparent 50%);}
+  .serie-fallback{font-family:'Bebas Neue',sans-serif;font-size:6rem;color:color-mix(in srgb,var(--sc) 40%,transparent);position:relative;z-index:1;}
   .serie-info{padding:1.25rem;}
   .serie-season{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:.2rem;}
-  .serie-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;color:var(--sc);line-height:1;margin-bottom:.5rem;}
-  .serie-desc{font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:.75rem;}
-  .serie-meta{font-size:.75rem;color:var(--muted);font-weight:700;}
-  .selected-check{position:absolute;top:12px;right:12px;background:var(--sc);color:white;width:28px;height:28px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:1rem;z-index:2;}
-  .serie-card.selected .selected-check{display:flex;}
+  .serie-name{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:1px;color:var(--sc);line-height:1;margin-bottom:.5rem;}
+  .serie-meta{display:flex;gap:.75rem;font-size:.78rem;color:var(--muted);font-weight:700;}
+  .serie-dot{width:7px;height:7px;border-radius:50%;background:var(--sc);display:inline-block;margin-right:.3rem;}
+  .serie-open-hint{position:absolute;bottom:0;left:0;right:0;background:color-mix(in srgb,var(--sc) 90%,black);color:white;text-align:center;padding:.6rem;font-weight:900;font-size:.85rem;letter-spacing:1px;transform:translateY(100%);transition:transform .25s;}
+  .serie-card:hover .serie-open-hint{transform:translateY(0);}
 
-  .bottom-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,13,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:100;transform:translateY(100%);transition:transform .3s;}
-  .bottom-bar.visible{transform:translateY(0);}
-  .bottom-bar-info{display:flex;flex-direction:column;gap:.2rem;}
-  .bottom-bar-series{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;}
-  .bottom-bar-sub{font-size:.8rem;color:var(--muted);}
-  .count-row{display:flex;gap:.5rem;align-items:center;}
-  .cnt{background:var(--dark3);border:2px solid var(--border);color:var(--muted);border-radius:8px;padding:.45rem .9rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .2s;}
-  .cnt.on{background:var(--red);border-color:var(--red);color:white;}
-
-  /* ═══════════════════════════════
+  /* ══════════════════════════════
      ÉCRAN 2 : OUVERTURE
-  ═══════════════════════════════ */
+  ══════════════════════════════ */
   #screenOpen{
     display:none;
     min-height:100vh;
     flex-direction:column;
     align-items:center;
     justify-content:center;
+    padding:80px 2rem 4rem;
     position:relative;
     overflow:hidden;
-    cursor:pointer;
-    user-select:none;
   }
-
-  /* BG dynamique */
-  .open-bg{position:absolute;inset:0;transition:background .5s;z-index:0;}
-  .open-bg-glow{position:absolute;width:800px;height:800px;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;transition:background .5s;}
+  .open-bg{position:fixed;inset:0;z-index:0;transition:background 1s;}
+  .open-glow{position:fixed;width:900px;height:900px;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:0;transition:background 1s;}
 
   /* Phase booster */
   #phaseBooster{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:2rem;}
-  .booster-big{width:260px;height:364px;object-fit:contain;border-radius:16px;box-shadow:0 40px 100px rgba(0,0,0,.7);transition:all .4s;cursor:pointer;}
-  .booster-big-ph{width:260px;height:364px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:6rem;box-shadow:0 40px 100px rgba(0,0,0,.7);position:relative;overflow:hidden;}
+  .booster-big-wrap{cursor:pointer;transition:transform .2s;position:relative;}
+  .booster-big-wrap:hover{transform:scale(1.03) rotate(-1deg);}
+  .booster-big-img{width:260px;height:364px;object-fit:contain;border-radius:16px;box-shadow:0 40px 100px rgba(0,0,0,.8);display:block;}
+  .booster-big-ph{width:260px;height:364px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:6rem;box-shadow:0 40px 100px rgba(0,0,0,.8);position:relative;overflow:hidden;}
   .booster-big-ph::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent 60%);}
-  .booster-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);animation:bshine 2s ease-in-out infinite;}
-  @keyframes bshine{0%,100%{opacity:0;transform:translateX(-100%)}50%{opacity:1;transform:translateX(100%)}}
-  .open-hint{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:3px;color:rgba(255,255,255,.5);animation:hblink 1.5s ease-in-out infinite;}
-  @keyframes hblink{0%,100%{opacity:.3}50%{opacity:1}}
-  .open-counter{font-size:.85rem;color:var(--muted);letter-spacing:1px;}
+  .bshine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);animation:bsh 2.5s ease-in-out infinite;}
+  @keyframes bsh{0%,100%{opacity:0;transform:translateX(-100%)}50%{opacity:1;transform:translateX(100%)}}
+  .open-hint{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;color:rgba(255,255,255,.4);animation:bl 1.5s ease-in-out infinite;}
+  @keyframes bl{0%,100%{opacity:.2}50%{opacity:.8}}
+  .open-series-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--muted);}
 
   /* Phase carte */
   #phaseCard{
@@ -101,114 +92,84 @@
     display:none;
     flex-direction:column;
     align-items:center;
-    gap:1.5rem;
+    gap:1.75rem;
     width:100%;
   }
 
-  /* Stack de cartes */
-  .card-stack{position:relative;width:280px;height:392px;cursor:pointer;}
-  .stack-card{
-    position:absolute;inset:0;
-    border-radius:18px;
-    border:3px solid var(--border);
+  /* La grande carte centrale */
+  .big-card{
+    width:280px;
+    border-radius:20px;
     overflow:hidden;
-    transition:all .5s cubic-bezier(.34,1.56,.64,1);
-    box-shadow:0 20px 60px rgba(0,0,0,.6);
+    border:3px solid var(--border);
+    box-shadow:0 30px 80px rgba(0,0,0,.7);
+    cursor:pointer;
+    transition:transform .15s;
+    animation:cardAppear .4s cubic-bezier(.34,1.56,.64,1);
   }
-  .stack-card:nth-child(4){transform:translateY(12px) rotate(3deg) scale(.92);z-index:1;}
-  .stack-card:nth-child(3){transform:translateY(7px) rotate(1.5deg) scale(.95);z-index:2;}
-  .stack-card:nth-child(2){transform:translateY(3px) rotate(.5deg) scale(.98);z-index:3;}
-  .stack-card:nth-child(1){transform:translateY(0) rotate(0deg) scale(1);z-index:4;}
-
-  .card-face-big{height:260px;display:flex;align-items:center;justify-content:center;font-size:7rem;position:relative;overflow:hidden;}
-  .card-body-big{padding:1rem 1.25rem;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);}
-  .card-rarity-big{font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin-bottom:.4rem;}
-  .card-name-big{font-family:'Bebas Neue',sans-serif;font-size:1.75rem;letter-spacing:1px;line-height:1;}
-  .card-slot-big{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:.2rem;}
-  .foil-fx{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.25) 40%,rgba(255,100,200,.25) 50%,rgba(100,200,255,.25) 60%,transparent 80%);animation:foilS 1.5s ease-in-out infinite alternate;}
+  @keyframes cardAppear{
+    from{opacity:0;transform:scale(.7) translateY(30px);}
+    to{opacity:1;transform:scale(1) translateY(0);}
+  }
+  .big-card:hover{transform:translateY(-4px) scale(1.02);}
+  .big-card:active{transform:scale(.98);}
+  .big-card-face{height:280px;display:flex;align-items:center;justify-content:center;font-size:8rem;position:relative;overflow:hidden;}
+  .big-card-foil{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.25) 40%,rgba(255,100,200,.25) 50%,rgba(100,200,255,.25) 60%,transparent 80%);animation:foilS 1.5s ease-in-out infinite alternate;}
   @keyframes foilS{from{transform:translateX(-50%)}to{transform:translateX(50%)}}
+  .big-card-body{padding:1.25rem 1.5rem;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);}
+  .big-card-rarity{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin-bottom:.35rem;}
+  .big-card-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;line-height:1;margin-bottom:.25rem;}
+  .big-card-slot{font-size:.72rem;color:rgba(255,255,255,.4);}
+  .foil-tag{display:inline-block;margin-left:.4rem;font-size:.65rem;font-weight:900;background:linear-gradient(90deg,#FFD700,#FF69B4,#00BFFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 
-  /* Dos de carte (avant révélation) */
-  .card-back{
-    position:absolute;inset:0;
-    background:linear-gradient(135deg,#1a0005,#3d0010);
-    border-radius:15px;
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Bebas Neue',sans-serif;font-size:3rem;
-    color:rgba(255,255,255,.15);
-    letter-spacing:3px;
-    backface-visibility:hidden;
-  }
-  .card-back::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent 60%);border-radius:15px;}
+  /* Remaining stack indicator */
+  .stack-indicator{display:flex;gap:.35rem;align-items:center;}
+  .stack-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .3s;}
+  .stack-dot.done{background:var(--yellow);}
+  .stack-dot.current{background:white;transform:scale(1.3);}
 
-  /* Animation flip */
-  .flipping{animation:flip .5s ease forwards;}
-  @keyframes flip{
-    0%{transform:translateY(0) rotate(0) scale(1) perspective(600px) rotateY(0);}
-    40%{transform:translateY(-30px) scale(1.08) perspective(600px) rotateY(90deg);}
-    100%{transform:translateY(0) rotate(0) scale(1) perspective(600px) rotateY(0);}
-  }
+  .progress-txt{font-size:.85rem;color:var(--muted);letter-spacing:1px;}
+  .click-hint-card{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:rgba(255,255,255,.25);animation:bl 2s ease-in-out infinite;margin-top:-.5rem;}
 
-  /* Animation sortie booster */
-  .booster-exit{animation:boosterExit .6s ease forwards;}
-  @keyframes boosterExit{
-    0%{transform:scale(1) rotate(0deg);opacity:1;}
-    30%{transform:scale(1.15) rotate(-3deg);opacity:1;}
-    100%{transform:scale(0) rotate(15deg);opacity:0;}
-  }
-
-  .progress-info{font-size:.9rem;color:var(--muted);letter-spacing:1px;}
-  .progress-bar-outer{width:280px;height:4px;background:var(--border);border-radius:99px;overflow:hidden;}
-  .progress-bar-inner{height:100%;border-radius:99px;background:var(--yellow);transition:width .3s;}
-
-  .click-next{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:rgba(255,255,255,.4);animation:hblink 1.5s ease-in-out infinite;}
-
-  /* ═══════════════════════════════
+  /* ══════════════════════════════
      ÉCRAN 3 : RÉCAP
-  ═══════════════════════════════ */
-  #screenRecap{
-    display:none;
-    min-height:100vh;
-    padding:80px 2rem 6rem;
-  }
-  .recap-header{text-align:center;padding:3rem 0 2rem;}
-  .recap-title{font-family:'Bebas Neue',sans-serif;font-size:4rem;letter-spacing:3px;margin-bottom:.5rem;}
+  ══════════════════════════════ */
+  #screenRecap{display:none;min-height:100vh;padding:80px 2rem 5rem;}
+  .recap-top{text-align:center;padding:3rem 0 2.5rem;}
+  .recap-title{font-family:'Bebas Neue',sans-serif;font-size:4rem;letter-spacing:3px;margin-bottom:.4rem;}
   .recap-title span{color:var(--yellow);}
-  .recap-sub{color:var(--muted);font-size:.95rem;margin-bottom:2rem;}
-  .recap-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
+  .recap-sub{color:var(--muted);font-size:.9rem;margin-bottom:2rem;}
+  .recap-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem;}
 
-  /* STATS */
   .recap-stats{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
-  .rstat{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:.875rem 1.5rem;text-align:center;}
-  .rstat-n{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--yellow);line-height:1;}
-  .rstat-l{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:.2rem;}
+  .rstat{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:.875rem 1.5rem;text-align:center;min-width:90px;}
+  .rstat-n{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;}
+  .rstat-l{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:.2rem;}
 
-  /* SECTIONS */
-  .recap-section{max-width:1200px;margin:0 auto 2.5rem;}
-  .rsec-label{display:flex;align-items:center;gap:.6rem;font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+  .recap-section{max-width:1200px;margin:0 auto 2.5rem;padding:0 0;}
+  .rsec-label{display:flex;align-items:center;gap:.6rem;font-size:.73rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
   .rsec-dot{width:9px;height:9px;border-radius:50%;}
   .rsec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.875rem;}
 
-  /* MINI CARD */
-  .mini-card{border-radius:12px;overflow:hidden;border:2px solid var(--border);transition:transform .2s;animation:fadeUp .4s ease both;}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-  .mini-card:hover{transform:translateY(-4px);}
-  .mini-card.foil{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);}
-  .mini-face{height:110px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;overflow:hidden;}
-  .mini-foil{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.2) 40%,rgba(255,100,200,.2) 50%,rgba(100,200,255,.2) 60%,transparent 80%);animation:foilS 2s ease-in-out infinite alternate;}
-  .mini-body{padding:.6rem .75rem;background:var(--dark3);}
-  .mini-badge{display:inline-block;padding:.1rem .4rem;border-radius:4px;font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem;}
-  .mini-name{font-weight:900;font-size:.8rem;line-height:1.2;}
-  .mini-foil-tag{font-size:.58rem;font-weight:900;background:linear-gradient(90deg,#FFD700,#FF69B4,#00BFFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .mcard{border-radius:12px;overflow:hidden;border:2px solid var(--border);transition:transform .2s;animation:fadeUp .35s ease both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .mcard:hover{transform:translateY(-4px);}
+  .mcard.foil{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);}
+  .mface{height:110px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;overflow:hidden;}
+  .mfoil{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.2) 40%,rgba(255,100,200,.2) 50%,rgba(100,200,255,.2) 60%,transparent 80%);animation:foilS 2s ease-in-out infinite alternate;}
+  .mbody{padding:.65rem .75rem;background:var(--dark3);}
+  .mbadge{display:inline-block;padding:.1rem .4rem;border-radius:4px;font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem;}
+  .mname{font-weight:900;font-size:.82rem;line-height:1.2;}
+  .mfoil-tag{font-size:.6rem;font-weight:900;background:linear-gradient(90deg,#FFD700,#FF69B4,#00BFFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 
   /* TOAST */
-  .toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:var(--dark3);border:1px solid var(--border);border-left:3px solid #00cc66;border-radius:12px;padding:1rem 1.5rem;font-size:.875rem;font-weight:700;transform:translateX(220%);transition:transform .35s;max-width:300px;pointer-events:none;}
+  .toast{position:fixed;bottom:2rem;right:2rem;z-index:9999;background:var(--dark3);border:1px solid var(--border);border-left:4px solid #00cc66;border-radius:12px;padding:1rem 1.5rem;font-size:.875rem;font-weight:700;transform:translateX(220%);transition:transform .3s;max-width:300px;pointer-events:none;}
   .toast.hot{border-left-color:var(--yellow);}
-  .toast.on{transform:translateX(0);}
+  .toast.show{transform:translateX(0);}
 
-  .auth-wall{text-align:center;padding:6rem 2rem;}
-  .auth-wall h2{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;margin-bottom:.75rem;}
-  .auth-wall p{color:var(--muted);margin-bottom:1.5rem;}
+  /* Transition entre cartes */
+  .card-exit{animation:cardExit .3s ease forwards;}
+  @keyframes cardExit{to{opacity:0;transform:translateX(80px) rotate(8deg) scale(.9);}}
 </style>
 </head>
 <body>
@@ -223,74 +184,56 @@
   <div class="nav-user" id="navUser"></div>
 </nav>
 
-<!-- ════════════ ÉCRAN AUTH ════════════ -->
-<div id="screenAuth" style="display:none">
-  <div class="auth-wall">
-    <div style="font-size:4rem;margin-bottom:1rem">🔒</div>
-    <h2>Connexion requise</h2>
-    <p>Connecte-toi pour ouvrir des boosters.</p>
-    <a href="index.html" class="btn btn-primary" style="font-size:1rem;padding:.85rem 2rem">Se connecter →</a>
-  </div>
+<!-- AUTH -->
+<div id="screenAuth">
+  <div style="font-size:4rem;margin-bottom:1rem">🔒</div>
+  <h2>Connexion requise</h2>
+  <p>Connecte-toi pour ouvrir des boosters.</p>
+  <a href="index.html" class="btn btn-primary" style="font-size:1rem;padding:.85rem 2rem">Se connecter →</a>
 </div>
 
-<!-- ════════════ ÉCRAN 1 : SÉLECTION ════════════ -->
+<!-- ══════ ÉCRAN 1 : SÉLECTION ══════ -->
 <div id="screenSelect">
-  <h1 class="select-title">Choisis ta <span>Série</span></h1>
-  <p class="select-sub">Sélectionne un booster pour commencer</p>
+  <h1 class="sel-title">Choisis ta <span>Série</span></h1>
+  <p class="sel-sub">Clique sur un booster pour l'ouvrir directement</p>
   <div class="series-grid" id="seriesGrid"></div>
-  <div style="height:100px"></div>
 </div>
 
-<!-- BOTTOM BAR (fixe) -->
-<div class="bottom-bar" id="bottomBar">
-  <div class="bottom-bar-info">
-    <div class="bottom-bar-series" id="bbSeries" style="color:var(--red)">—</div>
-    <div class="bottom-bar-sub">Choisis la quantité</div>
-  </div>
-  <div class="count-row">
-    <button class="cnt on" onclick="setCount(1,this)">× 1</button>
-    <button class="cnt" onclick="setCount(5,this)">× 5</button>
-    <button class="cnt" onclick="setCount(10,this)">× 10</button>
-  </div>
-  <button class="btn btn-primary" onclick="startOpening()" style="font-size:1rem;padding:.85rem 2rem">
-    📦 Ouvrir !
-  </button>
-</div>
-
-<!-- ════════════ ÉCRAN 2 : OUVERTURE ════════════ -->
+<!-- ══════ ÉCRAN 2 : OUVERTURE ══════ -->
 <div id="screenOpen">
   <div class="open-bg" id="openBg"></div>
-  <div class="open-bg-glow" id="openGlow"></div>
+  <div class="open-glow" id="openGlow"></div>
 
-  <!-- Phase 1 : le booster -->
+  <!-- Booster -->
   <div id="phaseBooster">
-    <div id="boosterVisual">
-      <img id="boosterBigImg" class="booster-big" src="" alt="" style="display:none">
-      <div id="boosterBigPh" class="booster-big-ph">
-        <div class="booster-shine"></div>
-        <span id="boosterPhLabel" style="position:relative;z-index:1">?</span>
+    <div class="booster-big-wrap" id="boosterWrap" onclick="clickBooster()">
+      <img id="boosterImg" class="booster-big-img" src="" alt="" style="display:none">
+      <div id="boosterPh" class="booster-big-ph">
+        <div class="bshine"></div>
+        <span id="boosterPhLbl" style="position:relative;z-index:1">?</span>
       </div>
     </div>
     <div class="open-hint">CLIQUE POUR OUVRIR</div>
-    <div class="open-counter" id="openCounter"></div>
+    <div class="open-series-name" id="openSeriesName"></div>
   </div>
 
-  <!-- Phase 2 : cartes une par une -->
+  <!-- Carte une par une -->
   <div id="phaseCard">
-    <div class="card-stack" id="cardStack" onclick="nextCard()"></div>
-    <div class="progress-info" id="progressInfo">Carte 1 / 9</div>
-    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar" style="width:0%"></div></div>
-    <div class="click-next">CLIQUE POUR CONTINUER</div>
+    <div id="bigCardWrap"></div>
+    <div class="stack-indicator" id="stackIndicator"></div>
+    <div class="progress-txt" id="progressTxt">Carte 1 / 10</div>
+    <div class="click-hint-card" id="clickHintCard">CLIQUE POUR CONTINUER</div>
   </div>
 </div>
 
-<!-- ════════════ ÉCRAN 3 : RÉCAP ════════════ -->
+<!-- ══════ ÉCRAN 3 : RÉCAP ══════ -->
 <div id="screenRecap">
-  <div class="recap-header">
-    <div class="recap-title">Récap de ton <span>Ouverture</span></div>
-    <div class="recap-sub" id="recapSub">9 cartes obtenues</div>
-    <div class="recap-actions">
-      <button class="btn btn-primary" onclick="goBack()" style="font-size:1rem;padding:.85rem 2rem">📦 Ouvrir encore</button>
+  <div class="recap-top">
+    <div class="recap-title">Ton <span>Ouverture</span></div>
+    <div class="recap-sub" id="recapSub"></div>
+    <div class="recap-btns">
+      <button class="btn btn-primary" onclick="openAnother()" style="font-size:1rem;padding:.85rem 2rem">📦 Ouvrir un autre booster</button>
+      <button class="btn btn-outline" onclick="chooseSeries()" style="font-size:1rem;padding:.85rem 2rem">🔄 Changer de série</button>
       <a href="collection.html" class="btn btn-outline" style="font-size:1rem;padding:.85rem 2rem">📚 Ma Collection</a>
     </div>
     <div class="recap-stats" id="recapStats"></div>
@@ -301,14 +244,14 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ════════════════════════════════════════
-//  CONFIG
-// ════════════════════════════════════════
+// ══════════════════════════════════════
+//  DONNÉES
+// ══════════════════════════════════════
 const SERIES = [
-  {id:'origins', name:'Origins',  season:'Saison 1', color:'#FF6B35', img:'booster/wankulS1.png'},
-  {id:'campus',  name:'Campus',   season:'Saison 2', color:'#0099FF', img:'booster/wankulS2.png'},
-  {id:'battle',  name:'Battle',   season:'Saison 3', color:'#E8001D', img:'booster/wankulS3.png'},
-  {id:'saison4', name:'Saison 4', season:'Saison 4', color:'#9B59B6', img:'booster/wankulS4.png'},
+  {id:'origins', name:'Origins',  season:'Saison 1', color:'#FF6B35', img:'booster/wankulS1.png', cards:182},
+  {id:'campus',  name:'Campus',   season:'Saison 2', color:'#0099FF', img:'booster/wankulS2.png', cards:162},
+  {id:'battle',  name:'Battle',   season:'Saison 3', color:'#E8001D', img:'booster/wankulS3.png', cards:185},
+  {id:'saison4', name:'Saison 4', season:'Saison 4', color:'#9B59B6', img:'booster/wankulS4.png', cards:100},
 ];
 
 const R = {
@@ -324,6 +267,8 @@ const R = {
   'legendaire-or':    {label:'Légendaire Or',     color:'#FFD700'},
 };
 
+// Structure officielle booster Wankul : 10 cartes
+// 1 Terrain + 4 Communes + 3 Peu Communes + 1 Rare garantie + 1 Gros Slot
 const POOL = {
   origins:{
     terrain:[{id:'s1-t01',name:'Studio Wankil',emoji:'🏢'},{id:'s1-t02',name:'Twitch Arena',emoji:'🎮'},{id:'s1-t03',name:'Cuisine Laink',emoji:'🍳'},{id:'s1-t04',name:'Bureau Terracid',emoji:'💻'}],
@@ -340,7 +285,7 @@ const POOL = {
   campus:{
     terrain:[{id:'s2-t01',name:'Amphithéâtre',emoji:'🎓'},{id:'s2-t02',name:'Bibliothèque',emoji:'📚'}],
     commune:[{id:'s2-c01',name:'Darwin',emoji:'🦋'},{id:'s2-c02',name:'Newton',emoji:'🍎'},{id:'s2-c03',name:'Archimède',emoji:'⚙️'},{id:'s2-c04',name:'Voltaire',emoji:'📜'}],
-    'peu-commune':[{id:'s2-u01',name:'Picasso',emoji:'🖼️'},{id:'s2-u02',name:'Marie Curie',emoji:'⚗️'}],
+    'peu-commune':[{id:'s2-u01',name:'Picasso',emoji:'🖼️'},{id:'s2-u02',name:'Marie Curie',emoji:'⚗️'},{id:'s2-u03',name:'Molière',emoji:'🎭'}],
     rare:[{id:'s2-r01',name:'Da Vinci',emoji:'🎨'},{id:'s2-r02',name:'Einstein',emoji:'🔬'}],
     'super-rare':[{id:'s2-sr01',name:'Napoléon',emoji:'👑'},{id:'s2-sr02',name:'Cléopâtre',emoji:'🌺'}],
     'ultra-rare-holo1':[{id:'s2-ur1',name:'Zeus Holo',emoji:'⚡'}],
@@ -352,7 +297,7 @@ const POOL = {
   battle:{
     terrain:[{id:'s3-t01',name:'Arène Battle',emoji:'⚔️'},{id:'s3-t02',name:'Terrain JV',emoji:'🎮'}],
     commune:[{id:'s3-c01',name:'Luffy',emoji:'⚓'},{id:'s3-c02',name:'Eren',emoji:'⚡'},{id:'s3-c03',name:'Naruto',emoji:'🍃'},{id:'s3-c04',name:'Goku',emoji:'💪'}],
-    'peu-commune':[{id:'s3-u01',name:'Sonic',emoji:'💨'},{id:'s3-u02',name:'Link',emoji:'🗡️'}],
+    'peu-commune':[{id:'s3-u01',name:'Sonic',emoji:'💨'},{id:'s3-u02',name:'Link',emoji:'🗡️'},{id:'s3-u03',name:'Kirby',emoji:'🩷'}],
     rare:[{id:'s3-r01',name:'Mario',emoji:'🍄'},{id:'s3-r02',name:'Pikachu',emoji:'⚡'}],
     'super-rare':[{id:'s3-sr01',name:'Mecha Terracid',emoji:'🤖'},{id:'s3-sr02',name:'Laink Battle',emoji:'⚔️'}],
     'ultra-rare-holo1':[{id:'s3-ur1',name:'Gold Laink Holo',emoji:'✨'}],
@@ -364,7 +309,7 @@ const POOL = {
   saison4:{
     terrain:[{id:'s4-t01',name:'Terrain Futur',emoji:'🌌'},{id:'s4-t02',name:'Arène S4',emoji:'🚀'}],
     commune:[{id:'s4-c01',name:'Perso A',emoji:'👤'},{id:'s4-c02',name:'Perso B',emoji:'👥'},{id:'s4-c03',name:'Perso C',emoji:'🧑'},{id:'s4-c04',name:'Perso D',emoji:'👨'}],
-    'peu-commune':[{id:'s4-u01',name:'Héros A',emoji:'🦸'},{id:'s4-u02',name:'Héros B',emoji:'🦹'}],
+    'peu-commune':[{id:'s4-u01',name:'Héros A',emoji:'🦸'},{id:'s4-u02',name:'Héros B',emoji:'🦹'},{id:'s4-u03',name:'Héros C',emoji:'🧙'}],
     rare:[{id:'s4-r01',name:'Rare A',emoji:'💠'},{id:'s4-r02',name:'Rare B',emoji:'🔷'}],
     'super-rare':[{id:'s4-sr01',name:'SR A',emoji:'🌟'},{id:'s4-sr02',name:'SR B',emoji:'⭐'}],
     'ultra-rare-holo1':[{id:'s4-ur1',name:'Ultra Holo 1',emoji:'🌈'}],
@@ -375,26 +320,25 @@ const POOL = {
   },
 };
 
-// ════════════════════════════════════════
+// ══════════════════════════════════════
 //  STATE
-// ════════════════════════════════════════
-let selSeries = null;
-let boosterCount = 1;
-let allCards = [];       // toutes les cartes tirées
-let revealedIdx = -1;    // index de la carte actuellement affichée
-let phase = 'booster';   // 'booster' | 'cards' | 'done'
+// ══════════════════════════════════════
+let selId = null;
+let cards = [];
+let idx = 0;
+let clicking = false;
 
-// ════════════════════════════════════════
+// ══════════════════════════════════════
 //  INIT
-// ════════════════════════════════════════
+// ══════════════════════════════════════
 window.addEventListener('load', () => {
   updateNav();
   if (!isLoggedIn()) {
-    document.getElementById('screenSelect').style.display = 'none';
-    document.getElementById('screenAuth').style.display = '';
+    show('screenAuth');
     return;
   }
-  buildSeriesGrid();
+  show('screenSelect');
+  buildGrid();
 });
 
 function updateNav() {
@@ -406,10 +350,17 @@ function updateNav() {
 }
 function logout() { localStorage.clear(); location.href = 'index.html'; }
 
-// ════════════════════════════════════════
-//  ÉCRAN 1 : SÉLECTION
-// ════════════════════════════════════════
-function buildSeriesGrid() {
+function show(id) {
+  ['screenAuth','screenSelect','screenOpen','screenRecap'].forEach(s => {
+    const el = document.getElementById(s);
+    el.style.display = (s === id) ? (s === 'screenOpen' ? 'flex' : 'block') : 'none';
+  });
+}
+
+// ══════════════════════════════════════
+//  ÉCRAN 1 : GRILLE SÉRIES
+// ══════════════════════════════════════
+function buildGrid() {
   const grid = document.getElementById('seriesGrid');
   grid.innerHTML = '';
   SERIES.forEach(s => {
@@ -417,280 +368,218 @@ function buildSeriesGrid() {
     el.className = 'serie-card';
     el.style.setProperty('--sc', s.color);
     el.innerHTML = `
-      <div class="selected-check">✓</div>
       <div class="serie-img-wrap">
-        <img src="${s.img}" alt="${s.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <img src="${s.img}" alt="${s.name}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <div class="serie-fallback" style="display:none">${s.name.slice(0,2).toUpperCase()}</div>
       </div>
       <div class="serie-info">
         <div class="serie-season">${s.season}</div>
         <div class="serie-name">${s.name}</div>
-        <div class="serie-desc">Ouvre des boosters de la série ${s.name} et découvre tes cartes !</div>
-        <div class="serie-meta">📦 9 cartes par booster</div>
+        <div class="serie-meta">
+          <span><span class="serie-dot"></span>${s.cards} cartes</span>
+          <span>📦 10 cartes / booster</span>
+        </div>
       </div>
+      <div class="serie-open-hint">📦 OUVRIR CE BOOSTER</div>
     `;
-    el.onclick = () => selectSerie(s.id, el);
+    el.onclick = () => goToOpen(s.id);
     grid.appendChild(el);
   });
 }
 
-function selectSerie(id, el) {
-  selSeries = id;
-  document.querySelectorAll('.serie-card').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
+// ══════════════════════════════════════
+//  ÉCRAN 2 : SETUP OUVERTURE
+// ══════════════════════════════════════
+function goToOpen(id) {
+  selId = id;
   const s = SERIES.find(x => x.id === id);
-  document.getElementById('bbSeries').textContent = s.name;
-  document.getElementById('bbSeries').style.color = s.color;
-  document.getElementById('bottomBar').classList.add('visible');
-}
 
-function setCount(n, btn) {
-  boosterCount = n;
-  document.querySelectorAll('.cnt').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-}
-
-// ════════════════════════════════════════
-//  DÉMARRER L'OUVERTURE
-// ════════════════════════════════════════
-function startOpening() {
-  if (!selSeries) return;
-  const s = SERIES.find(x => x.id === selSeries);
-
-  // Tirage de toutes les cartes
-  allCards = [];
-  for (let i = 0; i < boosterCount; i++) allCards.push(...drawBooster(selSeries));
-  revealedIdx = -1;
-  phase = 'booster';
-
-  // Setup écran ouverture
-  document.getElementById('screenSelect').style.display = 'none';
-  document.getElementById('bottomBar').classList.remove('visible');
-  const so = document.getElementById('screenOpen');
-  so.style.display = 'flex';
+  // Tirage
+  cards = drawBooster(id);
+  idx = 0;
+  clicking = false;
 
   // BG
   document.getElementById('openBg').style.background =
-    `radial-gradient(ellipse at center, ${s.color}15 0%, var(--dark) 70%)`;
+    `radial-gradient(ellipse at center, ${s.color}18 0%, var(--dark) 65%)`;
   document.getElementById('openGlow').style.background =
-    `radial-gradient(circle, ${s.color}25, transparent 70%)`;
+    `radial-gradient(circle, ${s.color}28, transparent 65%)`;
 
   // Image booster
-  const img = document.getElementById('boosterBigImg');
-  const ph = document.getElementById('boosterBigPh');
+  const img = document.getElementById('boosterImg');
+  const ph  = document.getElementById('boosterPh');
+  img.style.display = 'none'; ph.style.display = 'flex';
   img.src = s.img;
   img.onload = () => { img.style.display = 'block'; ph.style.display = 'none'; };
   img.onerror = () => {
     img.style.display = 'none'; ph.style.display = 'flex';
-    ph.style.background = `linear-gradient(135deg,${s.color}44,${s.color}88)`;
-    document.getElementById('boosterPhLabel').textContent = s.name.slice(0,2).toUpperCase();
+    ph.style.background = `linear-gradient(135deg,${s.color}55,${s.color}99)`;
+    document.getElementById('boosterPhLbl').textContent = s.name.slice(0,2).toUpperCase();
   };
 
-  // Compteur
-  document.getElementById('openCounter').textContent =
-    boosterCount > 1 ? `${boosterCount} boosters • ${allCards.length} cartes` : '';
+  document.getElementById('openSeriesName').textContent = `${s.season} — ${s.name}`;
 
-  // Phase booster visible
+  // Reset phases
   document.getElementById('phaseBooster').style.display = 'flex';
   document.getElementById('phaseCard').style.display = 'none';
+  document.getElementById('bigCardWrap').innerHTML = '';
 
-  // Click sur le booster pour ouvrir
-  document.getElementById('phaseBooster').onclick = openBoosterAnim;
+  show('screenOpen');
 }
 
-// ════════════════════════════════════════
-//  ANIMATION OUVERTURE BOOSTER
-// ════════════════════════════════════════
-async function openBoosterAnim() {
-  if (phase !== 'booster') return;
-  phase = 'animating';
-
-  const visual = document.getElementById('boosterVisual');
+// ══════════════════════════════════════
+//  CLICK SUR LE BOOSTER
+// ══════════════════════════════════════
+async function clickBooster() {
+  const wrap = document.getElementById('boosterWrap');
 
   // Shake
-  visual.style.transition = 'transform .1s';
-  for (const t of ['-15px','15px','-10px','10px','0']) {
-    visual.style.transform = `translateX(${t})`;
-    await sleep(80);
+  for (const tx of ['-12px','12px','-8px','8px','0']) {
+    wrap.style.transform = `translateX(${tx}) scale(1.05)`;
+    await sleep(70);
   }
+  // Disparition
+  wrap.style.transition = 'transform .4s ease, opacity .4s';
+  wrap.style.transform = 'scale(0) rotate(20deg)';
+  wrap.style.opacity = '0';
 
-  // Exit animation
-  visual.classList.add('booster-exit');
-  await sleep(600);
+  await sleep(450);
 
-  // Switch to card phase
   document.getElementById('phaseBooster').style.display = 'none';
+  wrap.style.transform = '';
+  wrap.style.opacity = '';
+  wrap.style.transition = '';
+
   document.getElementById('phaseCard').style.display = 'flex';
-  phase = 'cards';
-
-  buildStack();
-  updateProgress();
+  buildDots();
+  showCard(0);
 }
 
-// ════════════════════════════════════════
-//  STACK DE CARTES
-// ════════════════════════════════════════
-function buildStack() {
-  const stack = document.getElementById('cardStack');
-  stack.innerHTML = '';
-
-  // On affiche les 4 prochaines cartes dans le stack (ou moins)
-  const remaining = allCards.length - (revealedIdx + 1);
-  const showCount = Math.min(4, remaining);
-
-  for (let i = showCount - 1; i >= 0; i--) {
-    const cardIdx = revealedIdx + 1 + i;
-    const card = allCards[cardIdx];
-    const isTop = (i === 0);
-
-    const el = document.createElement('div');
-    el.className = 'stack-card';
-
-    if (isTop) {
-      // Carte du dessus : on montre le dos
-      el.id = 'topCard';
-      el.style.background = '#1a0005';
-      el.innerHTML = `
-        <div class="card-back">
-          <span style="position:relative;z-index:1">WANKUL</span>
-          <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 60%);border-radius:15px;"></div>
-        </div>
-      `;
-    } else {
-      // Cartes du dessous : on montre le dos aussi
-      el.style.background = '#1a0005';
-      el.innerHTML = `<div class="card-back"><span style="position:relative;z-index:1">WANKUL</span></div>`;
-    }
-    stack.appendChild(el);
-  }
-}
-
-function nextCard() {
-  if (phase !== 'cards') return;
-  revealedIdx++;
-
-  if (revealedIdx >= allCards.length) return;
-
-  const card = allCards[revealedIdx];
+// ══════════════════════════════════════
+//  AFFICHER UNE CARTE
+// ══════════════════════════════════════
+function showCard(i) {
+  const card = cards[i];
   const r = R[card.slot] || R.commune;
-  const topCard = document.getElementById('topCard');
+  const wrap = document.getElementById('bigCardWrap');
+  const isLast = (i === cards.length - 1);
 
-  if (!topCard) return;
+  wrap.innerHTML = '';
 
-  // Flip animation : remplacer le dos par la face
-  topCard.classList.add('flipping');
-
-  // Notification pour cartes spéciales
-  const isSpecial = ['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1'].includes(card.slot);
-  if (isSpecial) triggerSpecialEffect(card, r);
-
-  setTimeout(() => {
-    topCard.innerHTML = `
-      <div class="card-face-big" style="background:linear-gradient(135deg,${r.color}33,${r.color}66)">
-        ${card.isFoil ? '<div class="foil-fx"></div>' : ''}
-        <span style="position:relative;z-index:1">${card.emoji}</span>
+  const el = document.createElement('div');
+  el.className = 'big-card' + (card.isFoil ? '' : '');
+  el.style.borderColor = r.color;
+  el.style.boxShadow = `0 30px 80px ${r.color}44`;
+  el.innerHTML = `
+    <div class="big-card-face" style="background:linear-gradient(135deg,${r.color}33,${r.color}66)">
+      ${card.isFoil ? '<div class="big-card-foil"></div>' : ''}
+      <span style="position:relative;z-index:1">${card.emoji}</span>
+    </div>
+    <div class="big-card-body" style="border-top:3px solid ${r.color}">
+      <div class="big-card-rarity" style="color:${r.color}">
+        ${r.label}${card.isFoil ? '<span class="foil-tag">✨ Foil</span>' : ''}
       </div>
-      <div class="card-body-big" style="border-top:3px solid ${r.color}">
-        <div class="card-rarity-big" style="color:${r.color}">${r.label}${card.isFoil ? ' ✨ Foil' : ''}</div>
-        <div class="card-name-big">${card.name}</div>
-        <div class="card-slot-big">${slotLabel(card.slot)}</div>
-      </div>
-    `;
-    topCard.style.borderColor = r.color;
-    topCard.style.boxShadow = `0 20px 60px ${r.color}44`;
-    topCard.style.background = '';
-    topCard.classList.remove('flipping');
+      <div class="big-card-name">${card.name}</div>
+      <div class="big-card-slot">${slotDesc(card.slot)}</div>
+    </div>
+  `;
 
-    updateProgress();
-
-    // Dernière carte
-    if (revealedIdx === allCards.length - 1) {
-      setTimeout(() => goToRecap(), 1200);
-    } else {
-      // Restack après un délai
-      setTimeout(() => {
-        const stack = document.getElementById('cardStack');
-        // Décaler visuellement la carte du dessus vers le bas
-        topCard.style.transition = 'transform .4s ease, opacity .4s';
-        topCard.style.transform = 'translateX(120%) rotate(15deg)';
-        topCard.style.opacity = '0';
-        setTimeout(() => { buildStack(); updateProgress(); }, 400);
-      }, 600);
-    }
-  }, 250);
-}
-
-function updateProgress() {
-  const total = allCards.length;
-  const shown = revealedIdx + 1;
-  document.getElementById('progressInfo').textContent = `Carte ${shown} / ${total}`;
-  document.getElementById('progressBar').style.width = `${(shown / total) * 100}%`;
-
-  if (shown >= total) {
-    document.querySelector('.click-next').textContent = 'VOIR LE RÉCAP';
+  // Click pour carte suivante
+  if (!isLast) {
+    el.onclick = () => advanceCard();
+  } else {
+    el.onclick = () => goToRecap();
+    document.getElementById('clickHintCard').textContent = 'VOIR LE RÉCAP';
   }
+
+  wrap.appendChild(el);
+
+  // BG flash pour cartes spéciales
+  const special = ['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1'];
+  if (special.includes(card.slot)) {
+    flashBg(r.color);
+    const msgs = {
+      'legendaire-or':'🏆 LÉGENDAIRE OR !!!',
+      'legendaire-argent':'🥈 Légendaire Argent !',
+      'legendaire-bronze':'🥉 Légendaire Bronze !',
+      'ultra-rare-holo2':'🌟 Ultra Rare Holo 2 !',
+      'ultra-rare-holo1':'⭐ Ultra Rare Holo 1 !',
+    };
+    showToast(msgs[card.slot], true);
+  }
+
+  updateDots(i);
+  document.getElementById('progressTxt').textContent = `Carte ${i+1} / ${cards.length}`;
+  document.getElementById('clickHintCard').style.display = isLast ? 'block' : 'block';
+  if (!isLast) document.getElementById('clickHintCard').textContent = 'CLIQUE POUR CONTINUER';
 }
 
-function slotLabel(slot) {
-  const labels = {
-    terrain:'🏔️ Terrain — 1ère carte',
-    commune:'⚪ Commune',
-    'peu-commune':'🟢 Peu Commune',
-    rare:'💙 Rare garantie',
-    'super-rare':'💜 Super Rare',
-    'ultra-rare-holo1':'⭐ Ultra Rare Holo 1',
-    'ultra-rare-holo2':'🌟 Ultra Rare Holo 2',
-    'legendaire-bronze':'🥉 Légendaire Bronze',
-    'legendaire-argent':'🥈 Légendaire Argent',
-    'legendaire-or':'🏆 Légendaire Or — GROS SLOT',
-  };
-  return labels[slot] || slot;
+async function advanceCard() {
+  if (clicking) return;
+  clicking = true;
+
+  const wrap = document.getElementById('bigCardWrap');
+  const el = wrap.firstChild;
+  if (el) {
+    el.classList.add('card-exit');
+    await sleep(280);
+  }
+
+  idx++;
+  if (idx < cards.length) {
+    showCard(idx);
+  } else {
+    goToRecap();
+  }
+  clicking = false;
 }
 
-function triggerSpecialEffect(card, r) {
-  const labels = {
-    'legendaire-or':'🏆 LÉGENDAIRE OR !!!',
-    'legendaire-argent':'🥈 Légendaire Argent !',
-    'legendaire-bronze':'🥉 Légendaire Bronze !',
-    'ultra-rare-holo2':'🌟 Ultra Rare Holo 2 !',
-    'ultra-rare-holo1':'⭐ Ultra Rare Holo 1 !',
-  };
-  showToast(labels[card.slot] || '🔥 Rare !', true);
-
-  // Flash background
-  const bg = document.getElementById('openBg');
-  bg.style.background = `radial-gradient(ellipse at center, ${r.color}40 0%, var(--dark) 60%)`;
-  setTimeout(() => {
-    const s = SERIES.find(x => x.id === selSeries);
-    bg.style.background = `radial-gradient(ellipse at center, ${s.color}15 0%, var(--dark) 70%)`;
-  }, 1500);
+// ══════════════════════════════════════
+//  DOTS PROGRESSION
+// ══════════════════════════════════════
+function buildDots() {
+  const container = document.getElementById('stackIndicator');
+  container.innerHTML = '';
+  cards.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'stack-dot';
+    d.id = `dot-${i}`;
+    container.appendChild(d);
+  });
 }
 
-// ════════════════════════════════════════
+function updateDots(current) {
+  cards.forEach((_, i) => {
+    const d = document.getElementById(`dot-${i}`);
+    if (!d) return;
+    d.className = 'stack-dot' + (i < current ? ' done' : i === current ? ' current' : '');
+  });
+}
+
+// ══════════════════════════════════════
 //  RÉCAP
-// ════════════════════════════════════════
+// ══════════════════════════════════════
 async function goToRecap() {
-  // Sauvegarde Supabase
+  // Sauvegarde
   try {
-    await saveCardsToCollection(allCards.map(c => ({...c, rarity:c.slot, seriesId:selSeries})));
-    await saveBoosterHistory(selSeries, allCards);
+    await saveCardsToCollection(cards.map(c => ({...c, rarity:c.slot, seriesId:selId})));
+    await saveBoosterHistory(selId, cards);
     showToast('✅ Collection sauvegardée !');
   } catch(e) { console.warn(e); }
 
-  document.getElementById('screenOpen').style.display = 'none';
-  const recap = document.getElementById('screenRecap');
-  recap.style.display = '';
+  show('screenRecap');
+  window.scrollTo(0,0);
 
-  const s = SERIES.find(x => x.id === selSeries);
-  document.getElementById('recapSub').textContent =
-    `${allCards.length} cartes obtenues — ${s.name}${boosterCount > 1 ? ` (${boosterCount} boosters)` : ''}`;
+  const s = SERIES.find(x => x.id === selId);
+  document.getElementById('recapSub').textContent = `${cards.length} cartes obtenues — ${s.season} ${s.name}`;
 
   // Stats
   const cnt = {};
-  allCards.forEach(c => { cnt[c.slot] = (cnt[c.slot]||0)+1; });
-  const foils = allCards.filter(c => c.isFoil).length;
-  let statsHtml = '';
+  cards.forEach(c => { cnt[c.slot] = (cnt[c.slot]||0)+1; });
+  const foils = cards.filter(c=>c.isFoil).length;
   const order = ['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1','super-rare','rare','peu-commune','commune','terrain'];
+  let statsHtml = '';
   for (const slot of order) {
     if (!cnt[slot]) continue;
     const r = R[slot];
@@ -699,14 +588,14 @@ async function goToRecap() {
   if (foils) statsHtml += `<div class="rstat"><div class="rstat-n" style="color:#FFD700">${foils}</div><div class="rstat-l">Foil ✨</div></div>`;
   document.getElementById('recapStats').innerHTML = statsHtml;
 
-  // Sections
+  // Sections cartes
   const sections = [
     {label:'🔥 Gros Slot',       color:'#FFD600', slots:['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1']},
     {label:'💜 Super Rares',     color:'#9B59B6', slots:['super-rare']},
-    {label:'💙 Rares garanties', color:'#2196F3', slots:['rare']},
+    {label:'💙 Rare garantie',   color:'#2196F3', slots:['rare']},
     {label:'🟢 Peu Communes',    color:'#4CAF50', slots:['peu-commune']},
     {label:'⚪ Communes',        color:'#9E9E9E', slots:['commune']},
-    {label:'🏔️ Terrains',       color:'#8D6E63', slots:['terrain']},
+    {label:'🏔️ Terrain',        color:'#8D6E63', slots:['terrain']},
   ];
 
   const container = document.getElementById('recapSections');
@@ -714,72 +603,75 @@ async function goToRecap() {
   let delay = 0;
 
   for (const sec of sections) {
-    const cards = allCards.filter(c => sec.slots.includes(c.slot));
-    if (!cards.length) continue;
+    const secCards = cards.filter(c => sec.slots.includes(c.slot));
+    if (!secCards.length) continue;
 
     const secEl = document.createElement('div');
     secEl.className = 'recap-section';
-    secEl.innerHTML = `<div class="rsec-label"><div class="rsec-dot" style="background:${sec.color}"></div>${sec.label} (${cards.length})</div>`;
+    secEl.innerHTML = `<div class="rsec-label"><div class="rsec-dot" style="background:${sec.color}"></div>${sec.label} (${secCards.length})</div>`;
     const grid = document.createElement('div');
     grid.className = 'rsec-grid';
 
-    for (const card of cards) {
+    for (const card of secCards) {
       const r = R[card.slot] || R.commune;
       const el = document.createElement('div');
-      el.className = 'mini-card' + (card.isFoil ? ' foil' : '');
+      el.className = 'mcard' + (card.isFoil ? ' foil' : '');
       el.style.borderColor = r.color;
       el.style.animationDelay = `${delay}ms`;
       el.innerHTML = `
-        <div class="mini-face" style="background:linear-gradient(135deg,${r.color}22,${r.color}44)">
-          ${card.isFoil ? '<div class="mini-foil"></div>' : ''}
+        <div class="mface" style="background:linear-gradient(135deg,${r.color}22,${r.color}44)">
+          ${card.isFoil ? '<div class="mfoil"></div>' : ''}
           <span style="position:relative;z-index:1">${card.emoji}</span>
         </div>
-        <div class="mini-body">
-          <div class="mini-badge" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}44">${r.label}</div>
-          ${card.isFoil ? '<div class="mini-foil-tag">✨ Foil</div>' : ''}
-          <div class="mini-name">${card.name}</div>
+        <div class="mbody">
+          <div class="mbadge" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}44">${r.label}</div>
+          ${card.isFoil ? '<div class="mfoil-tag">✨ Foil</div>' : ''}
+          <div class="mname">${card.name}</div>
         </div>
       `;
       grid.appendChild(el);
-      delay += 60;
+      delay += 50;
     }
     secEl.appendChild(grid);
     container.appendChild(secEl);
   }
-
-  recap.scrollIntoView({behavior:'smooth'});
 }
 
-function goBack() {
-  document.getElementById('screenRecap').style.display = 'none';
-  document.getElementById('screenSelect').style.display = 'flex';
-  document.getElementById('bottomBar').classList.add('visible');
-  // Reset
-  allCards = []; revealedIdx = -1; phase = 'booster';
-  const so = document.getElementById('screenOpen');
-  so.style.display = 'none';
-  // Re-select série courante
-  document.querySelectorAll('.serie-card').forEach((c,i) => {
-    if (SERIES[i].id === selSeries) c.classList.add('selected');
-  });
+// Ouvrir un autre booster de la même série
+function openAnother() {
+  goToOpen(selId);
 }
 
-// ════════════════════════════════════════
-//  TIRAGE OFFICIEL WANKUL
-// ════════════════════════════════════════
+// Revenir au choix de série
+function chooseSeries() {
+  show('screenSelect');
+}
+
+// ══════════════════════════════════════
+//  TIRAGE OFFICIEL (10 cartes)
+// ══════════════════════════════════════
 function drawBooster(sid) {
   const p = POOL[sid] || POOL.origins;
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-  const cards = [];
+  const result = [];
 
-  cards.push({...pick(p.terrain), slot:'terrain', isFoil: Math.random()<0.05});
-  for (let i=0;i<4;i++) cards.push({...pick(p.commune), slot:'commune', isFoil: Math.random()<0.02});
-  for (let i=0;i<2;i++) cards.push({...pick(p['peu-commune']), slot:'peu-commune', isFoil: Math.random()<0.04});
+  // 1. Terrain
+  result.push({...pick(p.terrain), slot:'terrain', isFoil: Math.random()<0.05});
 
+  // 2-5. Communes (4)
+  for (let i=0;i<4;i++)
+    result.push({...pick(p.commune), slot:'commune', isFoil: Math.random()<0.02});
+
+  // 6-8. Peu Communes (3)
+  for (let i=0;i<3;i++)
+    result.push({...pick(p['peu-commune']), slot:'peu-commune', isFoil: Math.random()<0.04});
+
+  // 9. Rare garantie (peut upgrade)
   const ru = Math.random();
-  const rSlot = ru<0.02 ? 'super-rare' : ru<0.04 ? 'ultra-rare-holo1' : 'rare';
-  cards.push({...pick(p[rSlot]||p.rare), slot:rSlot, isFoil: ru<0.01});
+  const rSlot = ru<0.02?'super-rare':ru<0.04?'ultra-rare-holo1':'rare';
+  result.push({...pick(p[rSlot]||p.rare), slot:rSlot, isFoil: ru<0.01});
 
+  // 10. Gros slot 🔥
   const b = Math.random();
   let bSlot;
   if      (b<0.01)  bSlot='legendaire-or';
@@ -789,16 +681,45 @@ function drawBooster(sid) {
   else if (b<0.22)  bSlot='ultra-rare-holo1';
   else if (b<0.40)  bSlot='super-rare';
   else              bSlot='rare';
-  cards.push({...pick(p[bSlot]||p.rare), slot:bSlot, isFoil:b<0.05||Math.random()<0.1, isBig:true});
+  result.push({...pick(p[bSlot]||p.rare), slot:bSlot, isFoil:b<0.05||Math.random()<0.1, isBig:true});
 
-  return cards;
+  return result;
+}
+
+// ══════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════
+function slotDesc(slot) {
+  return {
+    terrain:'🏔️ Carte Terrain — toujours en 1ère position',
+    commune:'⚪ Carte Commune',
+    'peu-commune':'🟢 Carte Peu Commune',
+    rare:'💙 Rare garantie',
+    'super-rare':'💜 Super Rare',
+    'ultra-rare-holo1':'⭐ Ultra Rare Holo 1',
+    'ultra-rare-holo2':'🌟 Ultra Rare Holo 2',
+    'legendaire-bronze':'🥉 Légendaire Bronze',
+    'legendaire-argent':'🥈 Légendaire Argent',
+    'legendaire-or':'🏆 Légendaire Or — Gros Slot',
+  }[slot] || slot;
+}
+
+function flashBg(color) {
+  const bg = document.getElementById('openBg');
+  bg.style.background = `radial-gradient(ellipse at center, ${color}45 0%, var(--dark) 60%)`;
+  setTimeout(() => {
+    const s = SERIES.find(x => x.id === selId);
+    if (s) bg.style.background = `radial-gradient(ellipse at center, ${s.color}18 0%, var(--dark) 65%)`;
+  }, 1800);
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 function showToast(msg, hot=false) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast' + (hot?' hot':'') + ' on';
-  setTimeout(() => t.classList.remove('on'), 4000);
+  t.textContent = msg;
+  t.className = 'toast' + (hot?' hot':'') + ' show';
+  setTimeout(() => t.classList.remove('show'), 4000);
 }
 </script>
 </body>
