@@ -7,10 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
 <script src="config.js"></script>
 <style>
-  :root{--red:#E8001D;--yellow:#FFD600;--dark:#0D0D0D;--dark2:#141414;--dark3:#1E1E1E;--card-bg:#1A1A1A;--text:#F5F5F5;--muted:#888;--border:#2A2A2A;}
+  :root{--red:#E8001D;--yellow:#FFD600;--dark:#0D0D0D;--dark2:#141414;--dark3:#1E1E1E;--card-bg:#1A1A1A;--text:#F5F5F5;--muted:#666;--border:#2A2A2A;}
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--dark);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
+  html,body{height:100%;}
+  body{background:var(--dark);color:var(--text);font-family:'Nunito',sans-serif;overflow-x:hidden;}
 
+  /* NAV */
   nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:64px;background:rgba(13,13,13,.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--red);}
   .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;color:var(--text);text-decoration:none;}
   .nav-logo span{color:var(--red);}
@@ -23,88 +25,188 @@
   .btn-outline{background:transparent;border:2px solid var(--border);color:var(--text);}
   .btn-outline:hover{border-color:var(--yellow);color:var(--yellow);}
   .btn-primary{background:var(--red);color:white;}
-  .btn-primary:hover{background:#c0001a;transform:translateY(-1px);}
-  .btn-primary:disabled{background:#444;cursor:not-allowed;transform:none;}
+  .btn-primary:hover{background:#c0001a;}
+  .btn-primary:disabled{background:#333;color:#555;cursor:not-allowed;}
 
-  .page{padding:80px 0 4rem;}
+  /* ═══════════════════════════════
+     ÉCRAN 1 : SÉLECTION SÉRIE
+  ═══════════════════════════════ */
+  #screenSelect{
+    min-height:100vh;padding:80px 2rem 4rem;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  .select-title{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:3px;margin:2.5rem 0 .5rem;text-align:center;}
+  .select-title span{color:var(--red);}
+  .select-sub{color:var(--muted);margin-bottom:3rem;text-align:center;font-size:.95rem;}
 
-  /* SERIES TABS */
-  .series-bar{display:flex;gap:1rem;padding:1.25rem 2rem;overflow-x:auto;background:var(--dark2);border-bottom:1px solid var(--border);}
-  .series-bar::-webkit-scrollbar{height:4px;}
-  .series-bar::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px;}
-  .series-tab{flex-shrink:0;display:flex;align-items:center;gap:.6rem;padding:.6rem 1.4rem;border-radius:10px;border:2px solid var(--border);background:var(--card-bg);cursor:pointer;transition:all .25s;font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;color:var(--muted);}
-  .series-tab:hover{color:var(--text);}
-  .series-tab.active{color:white;border-color:var(--sc);background:color-mix(in srgb,var(--sc) 20%,var(--card-bg));}
-  .sdot{width:10px;height:10px;border-radius:50%;background:var(--sc);}
+  .series-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem;width:100%;max-width:1100px;}
+  .serie-card{background:var(--card-bg);border:2px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:all .3s;position:relative;}
+  .serie-card:hover{transform:translateY(-6px);border-color:var(--sc);box-shadow:0 20px 50px rgba(0,0,0,.5);}
+  .serie-card.selected{border-color:var(--sc);box-shadow:0 0 0 4px color-mix(in srgb,var(--sc) 30%,transparent);}
+  .serie-img-wrap{height:200px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+  .serie-img-wrap img{height:100%;object-fit:contain;transition:transform .3s;}
+  .serie-card:hover .serie-img-wrap img{transform:scale(1.08);}
+  .serie-img-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,var(--card-bg),transparent 60%);}
+  .serie-fallback{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:color-mix(in srgb,var(--sc) 60%,transparent);}
+  .serie-info{padding:1.25rem;}
+  .serie-season{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:.2rem;}
+  .serie-name{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1px;color:var(--sc);line-height:1;margin-bottom:.5rem;}
+  .serie-desc{font-size:.82rem;color:var(--muted);line-height:1.5;margin-bottom:.75rem;}
+  .serie-meta{font-size:.75rem;color:var(--muted);font-weight:700;}
+  .selected-check{position:absolute;top:12px;right:12px;background:var(--sc);color:white;width:28px;height:28px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:1rem;z-index:2;}
+  .serie-card.selected .selected-check{display:flex;}
 
-  /* LAYOUT */
-  .main{display:grid;grid-template-columns:400px 1fr;min-height:calc(100vh - 130px);}
-  @media(max-width:900px){.main{grid-template-columns:1fr;}}
+  .bottom-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,13,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:100;transform:translateY(100%);transition:transform .3s;}
+  .bottom-bar.visible{transform:translateY(0);}
+  .bottom-bar-info{display:flex;flex-direction:column;gap:.2rem;}
+  .bottom-bar-series{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;}
+  .bottom-bar-sub{font-size:.8rem;color:var(--muted);}
+  .count-row{display:flex;gap:.5rem;align-items:center;}
+  .cnt{background:var(--dark3);border:2px solid var(--border);color:var(--muted);border-radius:8px;padding:.45rem .9rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .2s;}
+  .cnt.on{background:var(--red);border-color:var(--red);color:white;}
 
-  /* BOOSTER PANEL */
-  .booster-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;background:var(--dark);position:sticky;top:64px;height:calc(100vh - 64px);overflow:hidden;}
-  .panel-glow{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(232,0,29,.1),transparent 70%);pointer-events:none;transition:background .5s;}
-  .booster-wrap{position:relative;cursor:pointer;transition:transform .3s;user-select:none;}
-  .booster-wrap:hover{transform:scale(1.04) rotate(-1deg);}
-  .booster-wrap:active{transform:scale(.96);}
-  .booster-img{width:240px;height:336px;object-fit:contain;display:block;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6);}
-  .booster-placeholder{width:240px;height:336px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:5rem;letter-spacing:2px;color:rgba(255,255,255,.6);position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);}
-  .booster-placeholder::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%);}
-  .shine{position:absolute;inset:0;border-radius:14px;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.2) 50%,transparent 70%);animation:shine 3s ease-in-out infinite;}
-  @keyframes shine{0%,100%{opacity:0;transform:translateX(-100%)}50%{opacity:1;transform:translateX(100%)}}
-  .hint{margin-top:1.25rem;font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;animation:blink 2s ease-in-out infinite;}
-  @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
-  .count-row{display:flex;gap:.5rem;margin-top:1.25rem;}
-  .cnt-btn{background:var(--dark3);border:2px solid var(--border);color:var(--muted);border-radius:8px;padding:.45rem .95rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .2s;}
-  .cnt-btn.active{background:var(--red);border-color:var(--red);color:white;}
-  .open-btn{margin-top:1.25rem;font-size:1rem;padding:.85rem 0;width:260px;justify-content:center;}
+  /* ═══════════════════════════════
+     ÉCRAN 2 : OUVERTURE
+  ═══════════════════════════════ */
+  #screenOpen{
+    display:none;
+    min-height:100vh;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    cursor:pointer;
+    user-select:none;
+  }
 
-  /* CARDS PANEL */
-  .cards-panel{background:var(--dark2);border-left:1px solid var(--border);padding:2rem;overflow-y:auto;max-height:calc(100vh - 130px);}
-  .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;color:var(--muted);text-align:center;gap:.75rem;}
-  .empty-state .e-emoji{font-size:4rem;}
-  .panel-title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:1px;margin-bottom:1.25rem;}
-  .panel-title span{color:var(--red);}
+  /* BG dynamique */
+  .open-bg{position:absolute;inset:0;transition:background .5s;z-index:0;}
+  .open-bg-glow{position:absolute;width:800px;height:800px;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;transition:background .5s;}
+
+  /* Phase booster */
+  #phaseBooster{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:2rem;}
+  .booster-big{width:260px;height:364px;object-fit:contain;border-radius:16px;box-shadow:0 40px 100px rgba(0,0,0,.7);transition:all .4s;cursor:pointer;}
+  .booster-big-ph{width:260px;height:364px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:6rem;box-shadow:0 40px 100px rgba(0,0,0,.7);position:relative;overflow:hidden;}
+  .booster-big-ph::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent 60%);}
+  .booster-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);animation:bshine 2s ease-in-out infinite;}
+  @keyframes bshine{0%,100%{opacity:0;transform:translateX(-100%)}50%{opacity:1;transform:translateX(100%)}}
+  .open-hint{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:3px;color:rgba(255,255,255,.5);animation:hblink 1.5s ease-in-out infinite;}
+  @keyframes hblink{0%,100%{opacity:.3}50%{opacity:1}}
+  .open-counter{font-size:.85rem;color:var(--muted);letter-spacing:1px;}
+
+  /* Phase carte */
+  #phaseCard{
+    position:relative;z-index:10;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:1.5rem;
+    width:100%;
+  }
+
+  /* Stack de cartes */
+  .card-stack{position:relative;width:280px;height:392px;cursor:pointer;}
+  .stack-card{
+    position:absolute;inset:0;
+    border-radius:18px;
+    border:3px solid var(--border);
+    overflow:hidden;
+    transition:all .5s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 20px 60px rgba(0,0,0,.6);
+  }
+  .stack-card:nth-child(4){transform:translateY(12px) rotate(3deg) scale(.92);z-index:1;}
+  .stack-card:nth-child(3){transform:translateY(7px) rotate(1.5deg) scale(.95);z-index:2;}
+  .stack-card:nth-child(2){transform:translateY(3px) rotate(.5deg) scale(.98);z-index:3;}
+  .stack-card:nth-child(1){transform:translateY(0) rotate(0deg) scale(1);z-index:4;}
+
+  .card-face-big{height:260px;display:flex;align-items:center;justify-content:center;font-size:7rem;position:relative;overflow:hidden;}
+  .card-body-big{padding:1rem 1.25rem;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);}
+  .card-rarity-big{font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin-bottom:.4rem;}
+  .card-name-big{font-family:'Bebas Neue',sans-serif;font-size:1.75rem;letter-spacing:1px;line-height:1;}
+  .card-slot-big{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:.2rem;}
+  .foil-fx{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.25) 40%,rgba(255,100,200,.25) 50%,rgba(100,200,255,.25) 60%,transparent 80%);animation:foilS 1.5s ease-in-out infinite alternate;}
+  @keyframes foilS{from{transform:translateX(-50%)}to{transform:translateX(50%)}}
+
+  /* Dos de carte (avant révélation) */
+  .card-back{
+    position:absolute;inset:0;
+    background:linear-gradient(135deg,#1a0005,#3d0010);
+    border-radius:15px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Bebas Neue',sans-serif;font-size:3rem;
+    color:rgba(255,255,255,.15);
+    letter-spacing:3px;
+    backface-visibility:hidden;
+  }
+  .card-back::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent 60%);border-radius:15px;}
+
+  /* Animation flip */
+  .flipping{animation:flip .5s ease forwards;}
+  @keyframes flip{
+    0%{transform:translateY(0) rotate(0) scale(1) perspective(600px) rotateY(0);}
+    40%{transform:translateY(-30px) scale(1.08) perspective(600px) rotateY(90deg);}
+    100%{transform:translateY(0) rotate(0) scale(1) perspective(600px) rotateY(0);}
+  }
+
+  /* Animation sortie booster */
+  .booster-exit{animation:boosterExit .6s ease forwards;}
+  @keyframes boosterExit{
+    0%{transform:scale(1) rotate(0deg);opacity:1;}
+    30%{transform:scale(1.15) rotate(-3deg);opacity:1;}
+    100%{transform:scale(0) rotate(15deg);opacity:0;}
+  }
+
+  .progress-info{font-size:.9rem;color:var(--muted);letter-spacing:1px;}
+  .progress-bar-outer{width:280px;height:4px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .progress-bar-inner{height:100%;border-radius:99px;background:var(--yellow);transition:width .3s;}
+
+  .click-next{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:rgba(255,255,255,.4);animation:hblink 1.5s ease-in-out infinite;}
+
+  /* ═══════════════════════════════
+     ÉCRAN 3 : RÉCAP
+  ═══════════════════════════════ */
+  #screenRecap{
+    display:none;
+    min-height:100vh;
+    padding:80px 2rem 6rem;
+  }
+  .recap-header{text-align:center;padding:3rem 0 2rem;}
+  .recap-title{font-family:'Bebas Neue',sans-serif;font-size:4rem;letter-spacing:3px;margin-bottom:.5rem;}
+  .recap-title span{color:var(--yellow);}
+  .recap-sub{color:var(--muted);font-size:.95rem;margin-bottom:2rem;}
+  .recap-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
 
   /* STATS */
-  .stats-row{display:flex;gap:.6rem;margin-bottom:1.5rem;flex-wrap:wrap;}
-  .schip{background:var(--dark3);border:1px solid var(--border);border-radius:99px;padding:.3rem .8rem;font-size:.75rem;font-weight:700;display:flex;align-items:center;gap:.35rem;}
-  .schip-dot{width:7px;height:7px;border-radius:50%;}
+  .recap-stats{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
+  .rstat{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:.875rem 1.5rem;text-align:center;}
+  .rstat-n{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--yellow);line-height:1;}
+  .rstat-l{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:.2rem;}
 
-  /* SLOT SECTIONS */
-  .slot-sec{margin-bottom:1.75rem;}
-  .slot-label{display:flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);}
-  .slot-ldot{width:8px;height:8px;border-radius:50%;}
-  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.75rem;}
+  /* SECTIONS */
+  .recap-section{max-width:1200px;margin:0 auto 2.5rem;}
+  .rsec-label{display:flex;align-items:center;gap:.6rem;font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+  .rsec-dot{width:9px;height:9px;border-radius:50%;}
+  .rsec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.875rem;}
 
-  /* CARD */
-  .wcard{border-radius:12px;overflow:hidden;border:2px solid var(--border);transition:all .3s;opacity:0;animation:cardPop .5s ease forwards;}
-  @keyframes cardPop{0%{opacity:0;transform:scale(.6) rotateY(90deg) translateY(20px)}65%{transform:scale(1.05) rotateY(0deg) translateY(-4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
-  .wcard:hover{transform:translateY(-5px) scale(1.03);box-shadow:0 15px 40px rgba(0,0,0,.6);}
-  .wcard.foil{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);}
-  .wcard.big{grid-column:1/-1;}
-  .wcard-face{height:110px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden;}
-  .wcard.big .wcard-face{height:150px;font-size:5rem;}
-  .foil-fx{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.2) 40%,rgba(255,100,200,.2) 50%,rgba(100,200,255,.2) 60%,transparent 80%);animation:foilS 2s ease-in-out infinite alternate;}
-  @keyframes foilS{from{transform:translateX(-40%)}to{transform:translateX(40%)}}
-  .wcard-body{padding:.65rem .75rem;background:var(--dark3);}
-  .wcard-badge{display:inline-block;padding:.12rem .45rem;border-radius:4px;font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem;}
-  .wcard-name{font-weight:900;font-size:.82rem;line-height:1.2;}
-  .foil-label{font-size:.6rem;font-weight:900;background:linear-gradient(90deg,#FFD700,#FF69B4,#00BFFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-
-  /* OVERLAY ANIMATION */
-  .overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;opacity:0;pointer-events:none;transition:opacity .3s;}
-  .overlay.on{opacity:1;pointer-events:all;}
-  .ov-txt{font-family:'Bebas Neue',sans-serif;font-size:5rem;letter-spacing:6px;color:var(--yellow);animation:ovPulse .5s ease-in-out infinite alternate;}
-  @keyframes ovPulse{from{transform:scale(.92);text-shadow:0 0 20px rgba(255,214,0,.3)}to{transform:scale(1.08);text-shadow:0 0 60px rgba(255,214,0,.8)}}
-  .ov-sub{font-size:.9rem;color:var(--muted);text-transform:uppercase;letter-spacing:3px;}
+  /* MINI CARD */
+  .mini-card{border-radius:12px;overflow:hidden;border:2px solid var(--border);transition:transform .2s;animation:fadeUp .4s ease both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .mini-card:hover{transform:translateY(-4px);}
+  .mini-card.foil{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);}
+  .mini-face{height:110px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative;overflow:hidden;}
+  .mini-foil{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.2) 40%,rgba(255,100,200,.2) 50%,rgba(100,200,255,.2) 60%,transparent 80%);animation:foilS 2s ease-in-out infinite alternate;}
+  .mini-body{padding:.6rem .75rem;background:var(--dark3);}
+  .mini-badge{display:inline-block;padding:.1rem .4rem;border-radius:4px;font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem;}
+  .mini-name{font-weight:900;font-size:.8rem;line-height:1.2;}
+  .mini-foil-tag{font-size:.58rem;font-weight:900;background:linear-gradient(90deg,#FFD700,#FF69B4,#00BFFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 
   /* TOAST */
-  .toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:var(--dark3);border:1px solid var(--border);border-left:3px solid #00cc66;border-radius:12px;padding:1rem 1.5rem;font-size:.875rem;font-weight:700;transform:translateX(220%);transition:transform .35s;max-width:300px;}
-  .toast.hot{border-left-color:var(--red);}
+  .toast{position:fixed;bottom:2rem;right:2rem;z-index:999;background:var(--dark3);border:1px solid var(--border);border-left:3px solid #00cc66;border-radius:12px;padding:1rem 1.5rem;font-size:.875rem;font-weight:700;transform:translateX(220%);transition:transform .35s;max-width:300px;pointer-events:none;}
+  .toast.hot{border-left-color:var(--yellow);}
   .toast.on{transform:translateX(0);}
 
-  .auth-wall{text-align:center;padding:6rem 2rem;max-width:480px;margin:0 auto;}
+  .auth-wall{text-align:center;padding:6rem 2rem;}
   .auth-wall h2{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;margin-bottom:.75rem;}
   .auth-wall p{color:var(--muted);margin-bottom:1.5rem;}
 </style>
@@ -121,64 +223,87 @@
   <div class="nav-user" id="navUser"></div>
 </nav>
 
-<!-- OVERLAY -->
-<div class="overlay" id="overlay">
-  <div class="ov-txt" id="ovTxt">BATTLE</div>
-  <div class="ov-sub" id="ovSub">Ouverture en cours...</div>
+<!-- ════════════ ÉCRAN AUTH ════════════ -->
+<div id="screenAuth" style="display:none">
+  <div class="auth-wall">
+    <div style="font-size:4rem;margin-bottom:1rem">🔒</div>
+    <h2>Connexion requise</h2>
+    <p>Connecte-toi pour ouvrir des boosters.</p>
+    <a href="index.html" class="btn btn-primary" style="font-size:1rem;padding:.85rem 2rem">Se connecter →</a>
+  </div>
 </div>
 
-<div class="page">
-  <div id="authWall" style="display:none">
-    <div class="auth-wall">
-      <div style="font-size:4rem;margin-bottom:1rem">🔒</div>
-      <h2>Connexion requise</h2>
-      <p>Connecte-toi pour ouvrir des boosters.</p>
-      <a href="index.html" class="btn btn-primary" style="font-size:1rem;padding:.85rem 2rem">Se connecter →</a>
+<!-- ════════════ ÉCRAN 1 : SÉLECTION ════════════ -->
+<div id="screenSelect">
+  <h1 class="select-title">Choisis ta <span>Série</span></h1>
+  <p class="select-sub">Sélectionne un booster pour commencer</p>
+  <div class="series-grid" id="seriesGrid"></div>
+  <div style="height:100px"></div>
+</div>
+
+<!-- BOTTOM BAR (fixe) -->
+<div class="bottom-bar" id="bottomBar">
+  <div class="bottom-bar-info">
+    <div class="bottom-bar-series" id="bbSeries" style="color:var(--red)">—</div>
+    <div class="bottom-bar-sub">Choisis la quantité</div>
+  </div>
+  <div class="count-row">
+    <button class="cnt on" onclick="setCount(1,this)">× 1</button>
+    <button class="cnt" onclick="setCount(5,this)">× 5</button>
+    <button class="cnt" onclick="setCount(10,this)">× 10</button>
+  </div>
+  <button class="btn btn-primary" onclick="startOpening()" style="font-size:1rem;padding:.85rem 2rem">
+    📦 Ouvrir !
+  </button>
+</div>
+
+<!-- ════════════ ÉCRAN 2 : OUVERTURE ════════════ -->
+<div id="screenOpen">
+  <div class="open-bg" id="openBg"></div>
+  <div class="open-bg-glow" id="openGlow"></div>
+
+  <!-- Phase 1 : le booster -->
+  <div id="phaseBooster">
+    <div id="boosterVisual">
+      <img id="boosterBigImg" class="booster-big" src="" alt="" style="display:none">
+      <div id="boosterBigPh" class="booster-big-ph">
+        <div class="booster-shine"></div>
+        <span id="boosterPhLabel" style="position:relative;z-index:1">?</span>
+      </div>
     </div>
+    <div class="open-hint">CLIQUE POUR OUVRIR</div>
+    <div class="open-counter" id="openCounter"></div>
   </div>
 
-  <div id="mainContent" style="display:none">
-    <div class="series-bar" id="seriesBar"></div>
-    <div class="main">
-
-      <!-- GAUCHE : visuel booster -->
-      <div class="booster-panel">
-        <div class="panel-glow" id="panelGlow"></div>
-        <div class="booster-wrap" id="boosterWrap" onclick="triggerOpen()">
-          <div class="booster-placeholder" id="bPlaceholder" style="background:linear-gradient(135deg,#1a0a00,#3a1500)">
-            <div class="shine"></div>
-            <span style="position:relative;z-index:1" id="bLabel">?</span>
-          </div>
-          <img id="bImg" src="" alt="" style="display:none" class="booster-img">
-        </div>
-        <div class="hint" id="hint">← Sélectionne une série</div>
-        <div class="count-row">
-          <button class="cnt-btn active" onclick="setCount(1,this)">× 1</button>
-          <button class="cnt-btn" onclick="setCount(5,this)">× 5</button>
-          <button class="cnt-btn" onclick="setCount(10,this)">× 10</button>
-        </div>
-        <button class="btn btn-primary open-btn" id="openBtn" onclick="triggerOpen()" disabled>
-          📦 Ouvrir le booster
-        </button>
-      </div>
-
-      <!-- DROITE : résultat -->
-      <div class="cards-panel" id="cardsPanel">
-        <div class="empty-state" id="emptyState">
-          <div class="e-emoji">🃏</div>
-          <p style="font-size:.9rem;max-width:220px;line-height:1.6">Choisis une série à gauche et ouvre ton premier booster !</p>
-        </div>
-        <div id="cardsResult" style="display:none"></div>
-      </div>
-
-    </div>
+  <!-- Phase 2 : cartes une par une -->
+  <div id="phaseCard">
+    <div class="card-stack" id="cardStack" onclick="nextCard()"></div>
+    <div class="progress-info" id="progressInfo">Carte 1 / 9</div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar" style="width:0%"></div></div>
+    <div class="click-next">CLIQUE POUR CONTINUER</div>
   </div>
+</div>
+
+<!-- ════════════ ÉCRAN 3 : RÉCAP ════════════ -->
+<div id="screenRecap">
+  <div class="recap-header">
+    <div class="recap-title">Récap de ton <span>Ouverture</span></div>
+    <div class="recap-sub" id="recapSub">9 cartes obtenues</div>
+    <div class="recap-actions">
+      <button class="btn btn-primary" onclick="goBack()" style="font-size:1rem;padding:.85rem 2rem">📦 Ouvrir encore</button>
+      <a href="collection.html" class="btn btn-outline" style="font-size:1rem;padding:.85rem 2rem">📚 Ma Collection</a>
+    </div>
+    <div class="recap-stats" id="recapStats"></div>
+  </div>
+  <div id="recapSections"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── CONFIG SÉRIES ────────────────────────────────
+// ════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════
 const SERIES = [
   {id:'origins', name:'Origins',  season:'Saison 1', color:'#FF6B35', img:'booster/wankulS1.png'},
   {id:'campus',  name:'Campus',   season:'Saison 2', color:'#0099FF', img:'booster/wankulS2.png'},
@@ -186,45 +311,26 @@ const SERIES = [
   {id:'saison4', name:'Saison 4', season:'Saison 4', color:'#9B59B6', img:'booster/wankulS4.png'},
 ];
 
-// ─── RARETÉS WANKUL OFFICIELLES ──────────────────
 const R = {
-  terrain:            {label:'Terrain',           color:'#8D6E63'},
-  commune:            {label:'Commune',            color:'#9E9E9E'},
-  'peu-commune':      {label:'Peu Commune',        color:'#4CAF50'},
-  rare:               {label:'Rare',               color:'#2196F3'},
-  'super-rare':       {label:'Super Rare',         color:'#9B59B6'},
-  'ultra-rare-holo1': {label:'Ultra Rare Holo 1',  color:'#FFD600'},
-  'ultra-rare-holo2': {label:'Ultra Rare Holo 2',  color:'#FF9800'},
-  'legendaire-bronze':{label:'Légendaire Bronze',  color:'#CD7F32'},
-  'legendaire-argent':{label:'Légendaire Argent',  color:'#C0C0C0'},
-  'legendaire-or':    {label:'Légendaire Or',      color:'#FFD700'},
+  terrain:            {label:'Terrain',          color:'#8D6E63'},
+  commune:            {label:'Commune',           color:'#9E9E9E'},
+  'peu-commune':      {label:'Peu Commune',       color:'#4CAF50'},
+  rare:               {label:'Rare',              color:'#2196F3'},
+  'super-rare':       {label:'Super Rare',        color:'#9B59B6'},
+  'ultra-rare-holo1': {label:'Ultra Rare Holo 1', color:'#FFD600'},
+  'ultra-rare-holo2': {label:'Ultra Rare Holo 2', color:'#FF9800'},
+  'legendaire-bronze':{label:'Légendaire Bronze', color:'#CD7F32'},
+  'legendaire-argent':{label:'Légendaire Argent', color:'#C0C0C0'},
+  'legendaire-or':    {label:'Légendaire Or',     color:'#FFD700'},
 };
 
-// ─── POOL DE CARTES ───────────────────────────────
 const POOL = {
   origins:{
-    terrain:[
-      {id:'s1-t01',name:'Studio Wankil',emoji:'🏢'},
-      {id:'s1-t02',name:'Twitch Arena',emoji:'🎮'},
-      {id:'s1-t03',name:'Cuisine Laink',emoji:'🍳'},
-      {id:'s1-t04',name:'Bureau Terracid',emoji:'💻'},
-    ],
-    commune:[
-      {id:'s1-c01',name:'Gotaga',emoji:'⭐'},{id:'s1-c02',name:'Lena',emoji:'🌸'},
-      {id:'s1-c03',name:'Domingo',emoji:'🎲'},{id:'s1-c04',name:'Mister V',emoji:'😎'},
-      {id:'s1-c05',name:'Amixem',emoji:'🎬'},{id:'s1-c06',name:'Alphacast',emoji:'🎙️'},
-    ],
-    'peu-commune':[
-      {id:'s1-u01',name:'Kameto',emoji:'🦊'},{id:'s1-u02',name:'Maghla',emoji:'🌙'},
-      {id:'s1-u03',name:'Squeezie',emoji:'🎵'},{id:'s1-u04',name:'Michou',emoji:'😁'},
-    ],
-    rare:[
-      {id:'s1-r01',name:'ZeratoR',emoji:'💎'},{id:'s1-r02',name:'Sardoche',emoji:'🃏'},
-      {id:'s1-r03',name:'Locklear',emoji:'🎯'},{id:'s1-r04',name:'Ponce',emoji:'🔮'},
-    ],
-    'super-rare':[
-      {id:'s1-sr01',name:'Rog',emoji:'🎮'},{id:'s1-sr02',name:'Joueur du Dimanche',emoji:'🕹️'},
-    ],
+    terrain:[{id:'s1-t01',name:'Studio Wankil',emoji:'🏢'},{id:'s1-t02',name:'Twitch Arena',emoji:'🎮'},{id:'s1-t03',name:'Cuisine Laink',emoji:'🍳'},{id:'s1-t04',name:'Bureau Terracid',emoji:'💻'}],
+    commune:[{id:'s1-c01',name:'Gotaga',emoji:'⭐'},{id:'s1-c02',name:'Lena',emoji:'🌸'},{id:'s1-c03',name:'Domingo',emoji:'🎲'},{id:'s1-c04',name:'Mister V',emoji:'😎'},{id:'s1-c05',name:'Amixem',emoji:'🎬'},{id:'s1-c06',name:'Alphacast',emoji:'🎙️'}],
+    'peu-commune':[{id:'s1-u01',name:'Kameto',emoji:'🦊'},{id:'s1-u02',name:'Maghla',emoji:'🌙'},{id:'s1-u03',name:'Squeezie',emoji:'🎵'},{id:'s1-u04',name:'Michou',emoji:'😁'}],
+    rare:[{id:'s1-r01',name:'ZeratoR',emoji:'💎'},{id:'s1-r02',name:'Sardoche',emoji:'🃏'},{id:'s1-r03',name:'Locklear',emoji:'🎯'},{id:'s1-r04',name:'Ponce',emoji:'🔮'}],
+    'super-rare':[{id:'s1-sr01',name:'Rog',emoji:'🎮'},{id:'s1-sr02',name:'Joueur du Dimanche',emoji:'🕹️'}],
     'ultra-rare-holo1':[{id:'s1-ur1',name:'Superconeri Holo',emoji:'⚡'}],
     'ultra-rare-holo2':[{id:'s1-ur2',name:'Superconeri Full Art',emoji:'✨'}],
     'legendaire-bronze':[{id:'s1-lb',name:'Laink Bronze',emoji:'🥉'}],
@@ -232,22 +338,11 @@ const POOL = {
     'legendaire-or':[{id:'s1-lo',name:'Laink & Terracid Or',emoji:'🏆'}],
   },
   campus:{
-    terrain:[
-      {id:'s2-t01',name:'Amphithéâtre',emoji:'🎓'},{id:'s2-t02',name:'Bibliothèque',emoji:'📚'},
-    ],
-    commune:[
-      {id:'s2-c01',name:'Darwin',emoji:'🦋'},{id:'s2-c02',name:'Newton',emoji:'🍎'},
-      {id:'s2-c03',name:'Archimède',emoji:'⚙️'},{id:'s2-c04',name:'Voltaire',emoji:'📜'},
-    ],
-    'peu-commune':[
-      {id:'s2-u01',name:'Picasso',emoji:'🖼️'},{id:'s2-u02',name:'Marie Curie',emoji:'⚗️'},
-    ],
-    rare:[
-      {id:'s2-r01',name:'Da Vinci',emoji:'🎨'},{id:'s2-r02',name:'Einstein',emoji:'🔬'},
-    ],
-    'super-rare':[
-      {id:'s2-sr01',name:'Napoléon',emoji:'👑'},{id:'s2-sr02',name:'Cléopâtre',emoji:'🌺'},
-    ],
+    terrain:[{id:'s2-t01',name:'Amphithéâtre',emoji:'🎓'},{id:'s2-t02',name:'Bibliothèque',emoji:'📚'}],
+    commune:[{id:'s2-c01',name:'Darwin',emoji:'🦋'},{id:'s2-c02',name:'Newton',emoji:'🍎'},{id:'s2-c03',name:'Archimède',emoji:'⚙️'},{id:'s2-c04',name:'Voltaire',emoji:'📜'}],
+    'peu-commune':[{id:'s2-u01',name:'Picasso',emoji:'🖼️'},{id:'s2-u02',name:'Marie Curie',emoji:'⚗️'}],
+    rare:[{id:'s2-r01',name:'Da Vinci',emoji:'🎨'},{id:'s2-r02',name:'Einstein',emoji:'🔬'}],
+    'super-rare':[{id:'s2-sr01',name:'Napoléon',emoji:'👑'},{id:'s2-sr02',name:'Cléopâtre',emoji:'🌺'}],
     'ultra-rare-holo1':[{id:'s2-ur1',name:'Zeus Holo',emoji:'⚡'}],
     'ultra-rare-holo2':[{id:'s2-ur2',name:'Zeus Full Art',emoji:'🌩️'}],
     'legendaire-bronze':[{id:'s2-lb',name:'Laink Campus Bronze',emoji:'🥉'}],
@@ -255,22 +350,11 @@ const POOL = {
     'legendaire-or':[{id:'s2-lo',name:'Duo Campus Or',emoji:'🏆'}],
   },
   battle:{
-    terrain:[
-      {id:'s3-t01',name:'Arène Battle',emoji:'⚔️'},{id:'s3-t02',name:'Terrain JV',emoji:'🎮'},
-    ],
-    commune:[
-      {id:'s3-c01',name:'Luffy',emoji:'⚓'},{id:'s3-c02',name:'Eren',emoji:'⚡'},
-      {id:'s3-c03',name:'Naruto',emoji:'🍃'},{id:'s3-c04',name:'Goku',emoji:'💪'},
-    ],
-    'peu-commune':[
-      {id:'s3-u01',name:'Sonic',emoji:'💨'},{id:'s3-u02',name:'Link',emoji:'🗡️'},
-    ],
-    rare:[
-      {id:'s3-r01',name:'Mario',emoji:'🍄'},{id:'s3-r02',name:'Pikachu',emoji:'⚡'},
-    ],
-    'super-rare':[
-      {id:'s3-sr01',name:'Mecha Terracid',emoji:'🤖'},{id:'s3-sr02',name:'Laink Battle',emoji:'⚔️'},
-    ],
+    terrain:[{id:'s3-t01',name:'Arène Battle',emoji:'⚔️'},{id:'s3-t02',name:'Terrain JV',emoji:'🎮'}],
+    commune:[{id:'s3-c01',name:'Luffy',emoji:'⚓'},{id:'s3-c02',name:'Eren',emoji:'⚡'},{id:'s3-c03',name:'Naruto',emoji:'🍃'},{id:'s3-c04',name:'Goku',emoji:'💪'}],
+    'peu-commune':[{id:'s3-u01',name:'Sonic',emoji:'💨'},{id:'s3-u02',name:'Link',emoji:'🗡️'}],
+    rare:[{id:'s3-r01',name:'Mario',emoji:'🍄'},{id:'s3-r02',name:'Pikachu',emoji:'⚡'}],
+    'super-rare':[{id:'s3-sr01',name:'Mecha Terracid',emoji:'🤖'},{id:'s3-sr02',name:'Laink Battle',emoji:'⚔️'}],
     'ultra-rare-holo1':[{id:'s3-ur1',name:'Gold Laink Holo',emoji:'✨'}],
     'ultra-rare-holo2':[{id:'s3-ur2',name:'Gold Terracid Full Art',emoji:'💫'}],
     'legendaire-bronze':[{id:'s3-lb',name:'Terracid Battle Bronze',emoji:'🥉'}],
@@ -278,22 +362,11 @@ const POOL = {
     'legendaire-or':[{id:'s3-lo',name:'Duo Battle Or',emoji:'🏆'}],
   },
   saison4:{
-    terrain:[
-      {id:'s4-t01',name:'Terrain Futur',emoji:'🌌'},{id:'s4-t02',name:'Arène S4',emoji:'🚀'},
-    ],
-    commune:[
-      {id:'s4-c01',name:'Perso A',emoji:'👤'},{id:'s4-c02',name:'Perso B',emoji:'👥'},
-      {id:'s4-c03',name:'Perso C',emoji:'🧑'},{id:'s4-c04',name:'Perso D',emoji:'👨'},
-    ],
-    'peu-commune':[
-      {id:'s4-u01',name:'Héros A',emoji:'🦸'},{id:'s4-u02',name:'Héros B',emoji:'🦹'},
-    ],
-    rare:[
-      {id:'s4-r01',name:'Rare A',emoji:'💠'},{id:'s4-r02',name:'Rare B',emoji:'🔷'},
-    ],
-    'super-rare':[
-      {id:'s4-sr01',name:'SR A',emoji:'🌟'},{id:'s4-sr02',name:'SR B',emoji:'⭐'},
-    ],
+    terrain:[{id:'s4-t01',name:'Terrain Futur',emoji:'🌌'},{id:'s4-t02',name:'Arène S4',emoji:'🚀'}],
+    commune:[{id:'s4-c01',name:'Perso A',emoji:'👤'},{id:'s4-c02',name:'Perso B',emoji:'👥'},{id:'s4-c03',name:'Perso C',emoji:'🧑'},{id:'s4-c04',name:'Perso D',emoji:'👨'}],
+    'peu-commune':[{id:'s4-u01',name:'Héros A',emoji:'🦸'},{id:'s4-u02',name:'Héros B',emoji:'🦹'}],
+    rare:[{id:'s4-r01',name:'Rare A',emoji:'💠'},{id:'s4-r02',name:'Rare B',emoji:'🔷'}],
+    'super-rare':[{id:'s4-sr01',name:'SR A',emoji:'🌟'},{id:'s4-sr02',name:'SR B',emoji:'⭐'}],
     'ultra-rare-holo1':[{id:'s4-ur1',name:'Ultra Holo 1',emoji:'🌈'}],
     'ultra-rare-holo2':[{id:'s4-ur2',name:'Ultra Holo 2',emoji:'✨'}],
     'legendaire-bronze':[{id:'s4-lb',name:'Légende Bronze S4',emoji:'🥉'}],
@@ -302,35 +375,411 @@ const POOL = {
   },
 };
 
-// ─── TIRAGE WANKUL OFFICIEL ───────────────────────
-// Structure :
-//  Carte 1   : Terrain
-//  Cartes 2-5: Communes (4)
-//  Cartes 6-7: Peu Communes (2)
-//  Carte 8   : Rare garantie (peut upgrade)
-//  Carte 9   : Gros slot 🔥
+// ════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════
+let selSeries = null;
+let boosterCount = 1;
+let allCards = [];       // toutes les cartes tirées
+let revealedIdx = -1;    // index de la carte actuellement affichée
+let phase = 'booster';   // 'booster' | 'cards' | 'done'
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+window.addEventListener('load', () => {
+  updateNav();
+  if (!isLoggedIn()) {
+    document.getElementById('screenSelect').style.display = 'none';
+    document.getElementById('screenAuth').style.display = '';
+    return;
+  }
+  buildSeriesGrid();
+});
+
+function updateNav() {
+  const u = getUser(), el = document.getElementById('navUser');
+  if (u) {
+    const n = u.user_metadata?.username || u.email;
+    el.innerHTML = `<span>👤 ${n}</span><button class="btn btn-outline" onclick="logout()">Déco</button>`;
+  } else el.innerHTML = `<a href="index.html" class="btn btn-primary">Connexion</a>`;
+}
+function logout() { localStorage.clear(); location.href = 'index.html'; }
+
+// ════════════════════════════════════════
+//  ÉCRAN 1 : SÉLECTION
+// ════════════════════════════════════════
+function buildSeriesGrid() {
+  const grid = document.getElementById('seriesGrid');
+  grid.innerHTML = '';
+  SERIES.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'serie-card';
+    el.style.setProperty('--sc', s.color);
+    el.innerHTML = `
+      <div class="selected-check">✓</div>
+      <div class="serie-img-wrap">
+        <img src="${s.img}" alt="${s.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="serie-fallback" style="display:none">${s.name.slice(0,2).toUpperCase()}</div>
+      </div>
+      <div class="serie-info">
+        <div class="serie-season">${s.season}</div>
+        <div class="serie-name">${s.name}</div>
+        <div class="serie-desc">Ouvre des boosters de la série ${s.name} et découvre tes cartes !</div>
+        <div class="serie-meta">📦 9 cartes par booster</div>
+      </div>
+    `;
+    el.onclick = () => selectSerie(s.id, el);
+    grid.appendChild(el);
+  });
+}
+
+function selectSerie(id, el) {
+  selSeries = id;
+  document.querySelectorAll('.serie-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const s = SERIES.find(x => x.id === id);
+  document.getElementById('bbSeries').textContent = s.name;
+  document.getElementById('bbSeries').style.color = s.color;
+  document.getElementById('bottomBar').classList.add('visible');
+}
+
+function setCount(n, btn) {
+  boosterCount = n;
+  document.querySelectorAll('.cnt').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// ════════════════════════════════════════
+//  DÉMARRER L'OUVERTURE
+// ════════════════════════════════════════
+function startOpening() {
+  if (!selSeries) return;
+  const s = SERIES.find(x => x.id === selSeries);
+
+  // Tirage de toutes les cartes
+  allCards = [];
+  for (let i = 0; i < boosterCount; i++) allCards.push(...drawBooster(selSeries));
+  revealedIdx = -1;
+  phase = 'booster';
+
+  // Setup écran ouverture
+  document.getElementById('screenSelect').style.display = 'none';
+  document.getElementById('bottomBar').classList.remove('visible');
+  const so = document.getElementById('screenOpen');
+  so.style.display = 'flex';
+
+  // BG
+  document.getElementById('openBg').style.background =
+    `radial-gradient(ellipse at center, ${s.color}15 0%, var(--dark) 70%)`;
+  document.getElementById('openGlow').style.background =
+    `radial-gradient(circle, ${s.color}25, transparent 70%)`;
+
+  // Image booster
+  const img = document.getElementById('boosterBigImg');
+  const ph = document.getElementById('boosterBigPh');
+  img.src = s.img;
+  img.onload = () => { img.style.display = 'block'; ph.style.display = 'none'; };
+  img.onerror = () => {
+    img.style.display = 'none'; ph.style.display = 'flex';
+    ph.style.background = `linear-gradient(135deg,${s.color}44,${s.color}88)`;
+    document.getElementById('boosterPhLabel').textContent = s.name.slice(0,2).toUpperCase();
+  };
+
+  // Compteur
+  document.getElementById('openCounter').textContent =
+    boosterCount > 1 ? `${boosterCount} boosters • ${allCards.length} cartes` : '';
+
+  // Phase booster visible
+  document.getElementById('phaseBooster').style.display = 'flex';
+  document.getElementById('phaseCard').style.display = 'none';
+
+  // Click sur le booster pour ouvrir
+  document.getElementById('phaseBooster').onclick = openBoosterAnim;
+}
+
+// ════════════════════════════════════════
+//  ANIMATION OUVERTURE BOOSTER
+// ════════════════════════════════════════
+async function openBoosterAnim() {
+  if (phase !== 'booster') return;
+  phase = 'animating';
+
+  const visual = document.getElementById('boosterVisual');
+
+  // Shake
+  visual.style.transition = 'transform .1s';
+  for (const t of ['-15px','15px','-10px','10px','0']) {
+    visual.style.transform = `translateX(${t})`;
+    await sleep(80);
+  }
+
+  // Exit animation
+  visual.classList.add('booster-exit');
+  await sleep(600);
+
+  // Switch to card phase
+  document.getElementById('phaseBooster').style.display = 'none';
+  document.getElementById('phaseCard').style.display = 'flex';
+  phase = 'cards';
+
+  buildStack();
+  updateProgress();
+}
+
+// ════════════════════════════════════════
+//  STACK DE CARTES
+// ════════════════════════════════════════
+function buildStack() {
+  const stack = document.getElementById('cardStack');
+  stack.innerHTML = '';
+
+  // On affiche les 4 prochaines cartes dans le stack (ou moins)
+  const remaining = allCards.length - (revealedIdx + 1);
+  const showCount = Math.min(4, remaining);
+
+  for (let i = showCount - 1; i >= 0; i--) {
+    const cardIdx = revealedIdx + 1 + i;
+    const card = allCards[cardIdx];
+    const isTop = (i === 0);
+
+    const el = document.createElement('div');
+    el.className = 'stack-card';
+
+    if (isTop) {
+      // Carte du dessus : on montre le dos
+      el.id = 'topCard';
+      el.style.background = '#1a0005';
+      el.innerHTML = `
+        <div class="card-back">
+          <span style="position:relative;z-index:1">WANKUL</span>
+          <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 60%);border-radius:15px;"></div>
+        </div>
+      `;
+    } else {
+      // Cartes du dessous : on montre le dos aussi
+      el.style.background = '#1a0005';
+      el.innerHTML = `<div class="card-back"><span style="position:relative;z-index:1">WANKUL</span></div>`;
+    }
+    stack.appendChild(el);
+  }
+}
+
+function nextCard() {
+  if (phase !== 'cards') return;
+  revealedIdx++;
+
+  if (revealedIdx >= allCards.length) return;
+
+  const card = allCards[revealedIdx];
+  const r = R[card.slot] || R.commune;
+  const topCard = document.getElementById('topCard');
+
+  if (!topCard) return;
+
+  // Flip animation : remplacer le dos par la face
+  topCard.classList.add('flipping');
+
+  // Notification pour cartes spéciales
+  const isSpecial = ['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1'].includes(card.slot);
+  if (isSpecial) triggerSpecialEffect(card, r);
+
+  setTimeout(() => {
+    topCard.innerHTML = `
+      <div class="card-face-big" style="background:linear-gradient(135deg,${r.color}33,${r.color}66)">
+        ${card.isFoil ? '<div class="foil-fx"></div>' : ''}
+        <span style="position:relative;z-index:1">${card.emoji}</span>
+      </div>
+      <div class="card-body-big" style="border-top:3px solid ${r.color}">
+        <div class="card-rarity-big" style="color:${r.color}">${r.label}${card.isFoil ? ' ✨ Foil' : ''}</div>
+        <div class="card-name-big">${card.name}</div>
+        <div class="card-slot-big">${slotLabel(card.slot)}</div>
+      </div>
+    `;
+    topCard.style.borderColor = r.color;
+    topCard.style.boxShadow = `0 20px 60px ${r.color}44`;
+    topCard.style.background = '';
+    topCard.classList.remove('flipping');
+
+    updateProgress();
+
+    // Dernière carte
+    if (revealedIdx === allCards.length - 1) {
+      setTimeout(() => goToRecap(), 1200);
+    } else {
+      // Restack après un délai
+      setTimeout(() => {
+        const stack = document.getElementById('cardStack');
+        // Décaler visuellement la carte du dessus vers le bas
+        topCard.style.transition = 'transform .4s ease, opacity .4s';
+        topCard.style.transform = 'translateX(120%) rotate(15deg)';
+        topCard.style.opacity = '0';
+        setTimeout(() => { buildStack(); updateProgress(); }, 400);
+      }, 600);
+    }
+  }, 250);
+}
+
+function updateProgress() {
+  const total = allCards.length;
+  const shown = revealedIdx + 1;
+  document.getElementById('progressInfo').textContent = `Carte ${shown} / ${total}`;
+  document.getElementById('progressBar').style.width = `${(shown / total) * 100}%`;
+
+  if (shown >= total) {
+    document.querySelector('.click-next').textContent = 'VOIR LE RÉCAP';
+  }
+}
+
+function slotLabel(slot) {
+  const labels = {
+    terrain:'🏔️ Terrain — 1ère carte',
+    commune:'⚪ Commune',
+    'peu-commune':'🟢 Peu Commune',
+    rare:'💙 Rare garantie',
+    'super-rare':'💜 Super Rare',
+    'ultra-rare-holo1':'⭐ Ultra Rare Holo 1',
+    'ultra-rare-holo2':'🌟 Ultra Rare Holo 2',
+    'legendaire-bronze':'🥉 Légendaire Bronze',
+    'legendaire-argent':'🥈 Légendaire Argent',
+    'legendaire-or':'🏆 Légendaire Or — GROS SLOT',
+  };
+  return labels[slot] || slot;
+}
+
+function triggerSpecialEffect(card, r) {
+  const labels = {
+    'legendaire-or':'🏆 LÉGENDAIRE OR !!!',
+    'legendaire-argent':'🥈 Légendaire Argent !',
+    'legendaire-bronze':'🥉 Légendaire Bronze !',
+    'ultra-rare-holo2':'🌟 Ultra Rare Holo 2 !',
+    'ultra-rare-holo1':'⭐ Ultra Rare Holo 1 !',
+  };
+  showToast(labels[card.slot] || '🔥 Rare !', true);
+
+  // Flash background
+  const bg = document.getElementById('openBg');
+  bg.style.background = `radial-gradient(ellipse at center, ${r.color}40 0%, var(--dark) 60%)`;
+  setTimeout(() => {
+    const s = SERIES.find(x => x.id === selSeries);
+    bg.style.background = `radial-gradient(ellipse at center, ${s.color}15 0%, var(--dark) 70%)`;
+  }, 1500);
+}
+
+// ════════════════════════════════════════
+//  RÉCAP
+// ════════════════════════════════════════
+async function goToRecap() {
+  // Sauvegarde Supabase
+  try {
+    await saveCardsToCollection(allCards.map(c => ({...c, rarity:c.slot, seriesId:selSeries})));
+    await saveBoosterHistory(selSeries, allCards);
+    showToast('✅ Collection sauvegardée !');
+  } catch(e) { console.warn(e); }
+
+  document.getElementById('screenOpen').style.display = 'none';
+  const recap = document.getElementById('screenRecap');
+  recap.style.display = '';
+
+  const s = SERIES.find(x => x.id === selSeries);
+  document.getElementById('recapSub').textContent =
+    `${allCards.length} cartes obtenues — ${s.name}${boosterCount > 1 ? ` (${boosterCount} boosters)` : ''}`;
+
+  // Stats
+  const cnt = {};
+  allCards.forEach(c => { cnt[c.slot] = (cnt[c.slot]||0)+1; });
+  const foils = allCards.filter(c => c.isFoil).length;
+  let statsHtml = '';
+  const order = ['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1','super-rare','rare','peu-commune','commune','terrain'];
+  for (const slot of order) {
+    if (!cnt[slot]) continue;
+    const r = R[slot];
+    statsHtml += `<div class="rstat"><div class="rstat-n" style="color:${r.color}">${cnt[slot]}</div><div class="rstat-l">${r.label}</div></div>`;
+  }
+  if (foils) statsHtml += `<div class="rstat"><div class="rstat-n" style="color:#FFD700">${foils}</div><div class="rstat-l">Foil ✨</div></div>`;
+  document.getElementById('recapStats').innerHTML = statsHtml;
+
+  // Sections
+  const sections = [
+    {label:'🔥 Gros Slot',       color:'#FFD600', slots:['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1']},
+    {label:'💜 Super Rares',     color:'#9B59B6', slots:['super-rare']},
+    {label:'💙 Rares garanties', color:'#2196F3', slots:['rare']},
+    {label:'🟢 Peu Communes',    color:'#4CAF50', slots:['peu-commune']},
+    {label:'⚪ Communes',        color:'#9E9E9E', slots:['commune']},
+    {label:'🏔️ Terrains',       color:'#8D6E63', slots:['terrain']},
+  ];
+
+  const container = document.getElementById('recapSections');
+  container.innerHTML = '';
+  let delay = 0;
+
+  for (const sec of sections) {
+    const cards = allCards.filter(c => sec.slots.includes(c.slot));
+    if (!cards.length) continue;
+
+    const secEl = document.createElement('div');
+    secEl.className = 'recap-section';
+    secEl.innerHTML = `<div class="rsec-label"><div class="rsec-dot" style="background:${sec.color}"></div>${sec.label} (${cards.length})</div>`;
+    const grid = document.createElement('div');
+    grid.className = 'rsec-grid';
+
+    for (const card of cards) {
+      const r = R[card.slot] || R.commune;
+      const el = document.createElement('div');
+      el.className = 'mini-card' + (card.isFoil ? ' foil' : '');
+      el.style.borderColor = r.color;
+      el.style.animationDelay = `${delay}ms`;
+      el.innerHTML = `
+        <div class="mini-face" style="background:linear-gradient(135deg,${r.color}22,${r.color}44)">
+          ${card.isFoil ? '<div class="mini-foil"></div>' : ''}
+          <span style="position:relative;z-index:1">${card.emoji}</span>
+        </div>
+        <div class="mini-body">
+          <div class="mini-badge" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}44">${r.label}</div>
+          ${card.isFoil ? '<div class="mini-foil-tag">✨ Foil</div>' : ''}
+          <div class="mini-name">${card.name}</div>
+        </div>
+      `;
+      grid.appendChild(el);
+      delay += 60;
+    }
+    secEl.appendChild(grid);
+    container.appendChild(secEl);
+  }
+
+  recap.scrollIntoView({behavior:'smooth'});
+}
+
+function goBack() {
+  document.getElementById('screenRecap').style.display = 'none';
+  document.getElementById('screenSelect').style.display = 'flex';
+  document.getElementById('bottomBar').classList.add('visible');
+  // Reset
+  allCards = []; revealedIdx = -1; phase = 'booster';
+  const so = document.getElementById('screenOpen');
+  so.style.display = 'none';
+  // Re-select série courante
+  document.querySelectorAll('.serie-card').forEach((c,i) => {
+    if (SERIES[i].id === selSeries) c.classList.add('selected');
+  });
+}
+
+// ════════════════════════════════════════
+//  TIRAGE OFFICIEL WANKUL
+// ════════════════════════════════════════
 function drawBooster(sid) {
   const p = POOL[sid] || POOL.origins;
-  const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
   const cards = [];
 
-  // 1. Terrain
   cards.push({...pick(p.terrain), slot:'terrain', isFoil: Math.random()<0.05});
+  for (let i=0;i<4;i++) cards.push({...pick(p.commune), slot:'commune', isFoil: Math.random()<0.02});
+  for (let i=0;i<2;i++) cards.push({...pick(p['peu-commune']), slot:'peu-commune', isFoil: Math.random()<0.04});
 
-  // 2-5. Communes
-  for(let i=0;i<4;i++)
-    cards.push({...pick(p.commune), slot:'commune', isFoil: Math.random()<0.02});
-
-  // 6-7. Peu Communes
-  for(let i=0;i<2;i++)
-    cards.push({...pick(p['peu-commune']), slot:'peu-commune', isFoil: Math.random()<0.04});
-
-  // 8. Rare garantie (peut upgrade)
   const ru = Math.random();
   const rSlot = ru<0.02 ? 'super-rare' : ru<0.04 ? 'ultra-rare-holo1' : 'rare';
   cards.push({...pick(p[rSlot]||p.rare), slot:rSlot, isFoil: ru<0.01});
 
-  // 9. Gros slot
   const b = Math.random();
   let bSlot;
   if      (b<0.01)  bSlot='legendaire-or';
@@ -345,194 +794,11 @@ function drawBooster(sid) {
   return cards;
 }
 
-// ─── STATE ────────────────────────────────────────
-let sel = null, count = 1, busy = false;
-
-window.addEventListener('load',()=>{
-  updateNav();
-  if(!isLoggedIn()){document.getElementById('authWall').style.display='';return;}
-  document.getElementById('mainContent').style.display='';
-  buildTabs();
-});
-
-function updateNav(){
-  const u=getUser(), el=document.getElementById('navUser');
-  if(u){
-    const n=u.user_metadata?.username||u.email;
-    el.innerHTML=`<span>👤 ${n}</span><button class="btn btn-outline" onclick="logout()">Déco</button>`;
-  } else el.innerHTML=`<a href="index.html" class="btn btn-primary">Connexion</a>`;
-}
-function logout(){localStorage.clear();location.href='index.html';}
-
-function buildTabs(){
-  const bar=document.getElementById('seriesBar');
-  bar.innerHTML='';
-  SERIES.forEach(s=>{
-    const b=document.createElement('button');
-    b.className='series-tab';
-    b.style.setProperty('--sc',s.color);
-    b.innerHTML=`<div class="sdot"></div>${s.season} — ${s.name}`;
-    b.onclick=()=>selectSeries(s.id);
-    bar.appendChild(b);
-  });
-}
-
-function selectSeries(id){
-  sel=id;
-  const s=SERIES.find(x=>x.id===id);
-  document.querySelectorAll('.series-tab').forEach((b,i)=>b.classList.toggle('active',SERIES[i].id===id));
-
-  // Image
-  const img=document.getElementById('bImg');
-  const ph=document.getElementById('bPlaceholder');
-  img.src=s.img;
-  img.onload=()=>{img.style.display='block';ph.style.display='none';};
-  img.onerror=()=>{
-    img.style.display='none'; ph.style.display='flex';
-    ph.style.background=`linear-gradient(135deg,${s.color}33,${s.color}77)`;
-    document.getElementById('bLabel').textContent=s.name.slice(0,2).toUpperCase();
-  };
-
-  // Glow
-  document.getElementById('panelGlow').style.background=`radial-gradient(circle,${s.color}20,transparent 70%)`;
-  document.getElementById('boosterWrap').style.filter=`drop-shadow(0 25px 70px ${s.color}55)`;
-  document.getElementById('hint').textContent='Clique pour ouvrir !';
-  document.getElementById('openBtn').disabled=false;
-  document.getElementById('emptyState').style.display='flex';
-  document.getElementById('cardsResult').style.display='none';
-}
-
-function setCount(n,btn){
-  count=n;
-  document.querySelectorAll('.cnt-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-async function triggerOpen(){
-  if(!sel||busy) return;
-  busy=true;
-  document.getElementById('openBtn').disabled=true;
-
-  const s=SERIES.find(x=>x.id===sel);
-
-  // Overlay
-  document.getElementById('ovTxt').textContent=s.name.toUpperCase();
-  document.getElementById('ovSub').textContent=count>1?`Ouverture de ${count} boosters...`:'Ouverture en cours...';
-  document.getElementById('overlay').classList.add('on');
-
-  // Shake booster
-  const w=document.getElementById('boosterWrap');
-  w.style.transition='transform .15s';
-  for(const [tx,ty,r] of [['-8px','0','3deg'],['8px','0','-3deg'],['0','-10px','0'],['0','0','0']]){
-    w.style.transform=`translate(${tx},${ty}) rotate(${r}) scale(1.05)`;
-    await sleep(120);
-  }
-  w.style.transform='';
-
-  await sleep(700);
-  document.getElementById('overlay').classList.remove('on');
-
-  // Tirage
-  const all=[];
-  for(let i=0;i<count;i++) all.push(...drawBooster(sel));
-
-  // Save
-  try{
-    await saveCardsToCollection(all.map(c=>({...c,rarity:c.slot,seriesId:sel})));
-    await saveBoosterHistory(sel,all);
-  }catch(e){console.warn(e);}
-
-  renderCards(all,s);
-  document.getElementById('openBtn').disabled=false;
-  busy=false;
-}
-
-function renderCards(cards,s){
-  document.getElementById('emptyState').style.display='none';
-  const res=document.getElementById('cardsResult');
-  res.style.display=''; res.innerHTML='';
-
-  // Titre
-  res.innerHTML+=`<div class="panel-title">${cards.length} cartes <span>${s.name}</span></div>`;
-
-  // Stats
-  const cnt={};
-  cards.forEach(c=>{cnt[c.slot]=(cnt[c.slot]||0)+1;});
-  const foils=cards.filter(c=>c.isFoil).length;
-  let statsHtml='<div class="stats-row">';
-  for(const [slot,n] of Object.entries(cnt)){
-    const r=R[slot]; if(!r) continue;
-    statsHtml+=`<div class="schip"><div class="schip-dot" style="background:${r.color}"></div>${r.label} ×${n}</div>`;
-  }
-  if(foils) statsHtml+=`<div class="schip">✨ Foil ×${foils}</div>`;
-  statsHtml+='</div>';
-  res.innerHTML+=statsHtml;
-
-  // Sections dans l'ordre du booster
-  const sections=[
-    {label:'🏔️ Terrain',        color:R.terrain.color,           cards:cards.filter(c=>c.slot==='terrain')},
-    {label:'⚪ Communes',        color:R.commune.color,           cards:cards.filter(c=>c.slot==='commune')},
-    {label:'🟢 Peu Communes',    color:R['peu-commune'].color,    cards:cards.filter(c=>c.slot==='peu-commune')},
-    {label:'💙 Rare garantie',   color:R.rare.color,              cards:cards.filter(c=>!c.isBig&&['rare','super-rare'].includes(c.slot))},
-    {label:'🔥 Gros Slot',       color:'#FFD600',                 cards:cards.filter(c=>c.isBig)},
-  ];
-
-  let delay=0;
-  for(const sec of sections){
-    if(!sec.cards.length) continue;
-    const secEl=document.createElement('div');
-    secEl.className='slot-sec';
-    secEl.innerHTML=`<div class="slot-label"><div class="slot-ldot" style="background:${sec.color}"></div>${sec.label}</div>`;
-    const grid=document.createElement('div');
-    grid.className='cards-grid';
-    for(const card of sec.cards){
-      grid.appendChild(makeCard(card,delay));
-      delay+=90;
-    }
-    secEl.appendChild(grid);
-    res.appendChild(secEl);
-  }
-
-  // Toast
-  const hasLO=cards.some(c=>c.slot==='legendaire-or');
-  const hasLA=cards.some(c=>c.slot==='legendaire-argent');
-  const hasLB=cards.some(c=>c.slot==='legendaire-bronze');
-  const hasUR=cards.some(c=>c.slot?.startsWith('ultra'));
-  if(hasLO) toast('🏆 LÉGENDAIRE OR ! Incroyable !!',true);
-  else if(hasLA) toast('🥈 Légendaire Argent !',true);
-  else if(hasLB) toast('🥉 Légendaire Bronze !',true);
-  else if(hasUR) toast('⭐ Ultra Rare obtenue !',true);
-  else if(foils) toast('✨ Carte Foil !');
-  else toast('✅ Cartes sauvegardées !');
-
-  res.scrollIntoView({behavior:'smooth',block:'start'});
-}
-
-function makeCard(card,delay){
-  const r=R[card.slot]||R.commune;
-  const el=document.createElement('div');
-  el.className='wcard'+(card.isFoil?' foil':'')+(card.isBig?' big':'');
-  el.style.animationDelay=`${delay}ms`;
-  el.style.borderColor=r.color;
-  el.innerHTML=`
-    <div class="wcard-face" style="background:linear-gradient(135deg,${r.color}22,${r.color}44)">
-      ${card.isFoil?'<div class="foil-fx"></div>':''}
-      <span style="position:relative;z-index:1">${card.emoji}</span>
-    </div>
-    <div class="wcard-body">
-      <div class="wcard-badge" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}44">${r.label}</div>
-      ${card.isFoil?'<div class="foil-label">✨ Foil</div>':''}
-      <div class="wcard-name">${card.name}</div>
-    </div>
-  `;
-  return el;
-}
-
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function toast(msg,hot=false){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast'+(hot?' hot':'')+' on';
-  setTimeout(()=>t.classList.remove('on'),4000);
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function showToast(msg, hot=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (hot?' hot':'') + ' on';
+  setTimeout(() => t.classList.remove('on'), 4000);
 }
 </script>
 </body>
