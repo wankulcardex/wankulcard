@@ -155,7 +155,7 @@
         <button class="filter-pill" onclick="setFilter('series','origins',this)">Origins</button>
         <button class="filter-pill" onclick="setFilter('series','campus',this)">Campus</button>
         <button class="filter-pill" onclick="setFilter('series','battle',this)">Battle</button>
-        <button class="filter-pill" onclick="setFilter('series','hors-serie',this)">Hors Série</button>
+        
       </div>
       <div class="filter-sep"></div>
       <div class="filter-group">
@@ -239,34 +239,39 @@ async function loadCollection() {
   document.getElementById('loadingState').style.display = '';
   document.getElementById('cardsContainer').innerHTML = '';
 
-  try {
-    const owned = await sbFetch(
-      `user_cards?user_id=eq.${user.id}&order=obtained_at.desc`
-    );
-
-    // Construire un set complet (toutes les cartes de toutes les séries)
-    const allPossible = [];
-    for (const [sid, rarityGroups] of Object.entries(POOL)) {
-      for (const [rarity, cardList] of Object.entries(rarityGroups)) {
-        for (const card of cardList) {
-          allPossible.push({ ...card, seriesId: sid, rarity, isFoil: false, key: card.id });
-          allPossible.push({ ...card, seriesId: sid, rarity, isFoil: true, key: `${card.id}-foil` });
-        }
+  // Construire d'abord toutes les cartes possibles (sans Supabase)
+  const allPossible = [];
+  for (const [sid, rarityGroups] of Object.entries(POOL)) {
+    for (const [rarity, cardList] of Object.entries(rarityGroups)) {
+      for (const card of cardList) {
+        allPossible.push({ ...card, seriesId: sid, rarity, isFoil: false, key: card.id });
+        allPossible.push({ ...card, seriesId: sid, rarity, isFoil: true, key: `${card.id}-foil` });
       }
     }
-
-    // Merge avec possédées
-    allCards = allPossible.map(card => {
-      const match = owned?.find(o => o.card_id === card.key);
-      return { ...card, owned: !!match, quantity: match?.quantity || 0, obtainedAt: match?.obtained_at };
-    });
-
-    renderStats(owned || []);
-    renderCards();
-  } catch(e) {
-    console.error(e);
-    document.getElementById('cardsContainer').innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div><h3>Erreur de chargement</h3><p>${e.message}</p></div>`;
   }
+
+  // Essayer de charger les cartes possédées depuis Supabase
+  let owned = [];
+  try {
+    const result = await sbFetch(
+      `user_cards?user_id=eq.${user.id}&order=obtained_at.desc`
+    );
+    // Si null = JWT expired, sbFetch a déjà redirigé
+    if (result === null) return;
+    owned = result || [];
+  } catch(e) {
+    console.warn('Impossible de charger depuis Supabase:', e.message);
+    // On affiche quand même la collection vide (toutes les cartes comme non-possédées)
+  }
+
+  // Merge avec possédées
+  allCards = allPossible.map(card => {
+    const match = owned.find(o => o.card_id === card.key);
+    return { ...card, owned: !!match, quantity: match?.quantity || 0, obtainedAt: match?.obtained_at };
+  });
+
+  renderStats(owned);
+  renderCards();
   document.getElementById('loadingState').style.display = 'none';
 }
 
@@ -276,7 +281,7 @@ function renderStats(owned) {
   const ownedCount = owned.length;
   const foilCount = owned.filter(o => o.card_id && o.card_id.endsWith('-foil')).length;
   const totalQty = owned.reduce((s,o) => s + (o.quantity||1), 0);
-  const legendCount = owned.filter(o => o.rarity === 'legendaire').length;
+  const legendCount = owned.filter(o => o.rarity && o.rarity.startsWith('legendaire')).length;
 
   const user = getUser();
   document.getElementById('collSubtitle').textContent =
