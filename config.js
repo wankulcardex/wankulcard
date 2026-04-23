@@ -31,7 +31,6 @@ const RARITIES = {
   commune:            {label:'Commune',           color:'#9E9E9E'},
   'peu-commune':      {label:'Peu Commune',       color:'#4CAF50'},
   rare:               {label:'Rare',              color:'#2196F3'},
-  'super-rare':       {label:'Super Rare',        color:'#9B59B6'},
   'ultra-rare-holo1': {label:'Ultra Rare Holo 1', color:'#FFD600'},
   'ultra-rare-holo2': {label:'Ultra Rare Holo 2', color:'#FF9800'},
   'legendaire-bronze':{label:'Légendaire Bronze', color:'#CD7F32'},
@@ -58,7 +57,7 @@ function drawBooster(sid) {
   for(let i=0;i<4;i++) result.push({...pick(p.commune),     slot:'commune',    isFoil:Math.random()<0.02, seriesId:sid});
   for(let i=0;i<3;i++) result.push({...pick(p['peu-commune']),slot:'peu-commune',isFoil:Math.random()<0.04, seriesId:sid});
   const ru=Math.random();
-  const rSlot=ru<0.02?'super-rare':ru<0.04?'ultra-rare-holo1':'rare';
+  const rSlot=ru<0.04?'ultra-rare-holo1':'rare';
   result.push({...pick(p[rSlot]||p.rare), slot:rSlot, isFoil:ru<0.01, seriesId:sid});
   const b=Math.random();
   let bSlot;
@@ -67,7 +66,7 @@ function drawBooster(sid) {
   else if (b<0.05)  bSlot='legendaire-bronze';
   else if (b<0.12)  bSlot='ultra-rare-holo2';
   else if (b<0.22)  bSlot='ultra-rare-holo1';
-  else if (b<0.40)  bSlot='super-rare';
+  else if (b<0.40)  bSlot='ultra-rare-holo1';
   else              bSlot='rare';
   result.push({...pick(p[bSlot]||p.rare), slot:bSlot, isFoil:b<0.05||Math.random()<0.1, isBig:true, seriesId:sid});
   return result;

@@ -518,7 +518,7 @@ async function goToRecap() {
   const cnt = {};
   cards.forEach(c => { cnt[c.slot] = (cnt[c.slot]||0)+1; });
   const foils = cards.filter(c=>c.isFoil).length;
-  const order = ['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1','super-rare','rare','peu-commune','commune','terrain'];
+  const order = ['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1','rare','peu-commune','commune','terrain'];
   let statsHtml = '';
   for (const slot of order) {
     if (!cnt[slot]) continue;
@@ -531,8 +531,7 @@ async function goToRecap() {
   // Sections cartes
   const sections = [
     {label:'🔥 Gros Slot',       color:'#FFD600', slots:['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1']},
-    {label:'💜 Super Rares',     color:'#9B59B6', slots:['super-rare']},
-    {label:'💙 Rare garantie',   color:'#2196F3', slots:['rare']},
+        {label:'💙 Rare garantie',   color:'#2196F3', slots:['rare']},
     {label:'🟢 Peu Communes',    color:'#4CAF50', slots:['peu-commune']},
     {label:'⚪ Communes',        color:'#9E9E9E', slots:['commune']},
     {label:'🏔️ Terrain',        color:'#8D6E63', slots:['terrain']},
@@ -608,8 +607,7 @@ function slotDesc(slot) {
     commune:'⚪ Commune',
     'peu-commune':'🟢 Peu Commune',
     rare:'💙 Rare garantie',
-    'super-rare':'💜 Super Rare',
-    'ultra-rare-holo1':'⭐ Ultra Rare Holo 1',
+        'ultra-rare-holo1':'⭐ Ultra Rare Holo 1',
     'ultra-rare-holo2':'🌟 Ultra Rare Holo 2',
     'legendaire-bronze':'🥉 Légendaire Bronze',
     'legendaire-argent':'🥈 Légendaire Argent',
