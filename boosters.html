@@ -41,7 +41,7 @@
   .sel-title span{color:var(--red);}
   .sel-sub{color:var(--muted);margin-bottom:3rem;font-size:.9rem;}
 
-  .series-grid{display:grid;grid-template-columns:repeat(2,260px);gap:1.5rem;margin:0 auto;place-items:center;}
+  .series-grid{display:grid;grid-template-columns:repeat(2,260px);gap:1.5rem;margin:0 auto;place-items:center;justify-content:center;}
   .serie-card{background:var(--card-bg);border:2px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:all .3s;position:relative;display:block;text-decoration:none;color:var(--text);}
   .serie-card:hover{transform:translateY(-6px);border-color:var(--sc);box-shadow:0 20px 50px rgba(0,0,0,.5);}
   .serie-img-wrap{height:220px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0a0a;position:relative;}
@@ -121,11 +121,12 @@
   }
   .big-card:hover{transform:translateY(-4px) scale(1.02);}
   .big-card:active{transform:scale(.98);}
-  .big-card-face{height:min(70vw,430px);display:flex;align-items:center;justify-content:center;font-size:8rem;position:relative;overflow:hidden;}
+  .big-card-face{height:min(119vw,504px);display:flex;align-items:center;justify-content:center;font-size:8rem;position:relative;overflow:hidden;}
   .big-card-face img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
   .big-card-face .fallback{position:relative;z-index:2;font-size:8rem;}
   .big-card-face .card-emoji{font-size:8rem;position:relative;z-index:2;}
-  .card-overlay-name{position:absolute;bottom:0;left:0;right:0;z-index:3;padding:.75rem 1rem;background:linear-gradient(to top,rgba(0,0,0,.85),transparent);font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;}
+  .card-overlay-name{display:none;}
+  .card-rarity-above{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:.5rem;padding:.3rem .9rem;border-radius:8px;display:inline-block;background:rgba(0,0,0,.5);}
   .big-card-foil{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.25) 40%,rgba(255,100,200,.25) 50%,rgba(100,200,255,.25) 60%,transparent 80%);animation:foilS 1.5s ease-in-out infinite alternate;}
   @keyframes foilS{from{transform:translateX(-50%)}to{transform:translateX(50%)}}
   .big-card-body{display:none;}
@@ -405,19 +406,22 @@ function showCard(i) {
 
   wrap.innerHTML = '';
 
+  // Rareté affichée AU-DESSUS de la carte
+  const rarityLabel = document.createElement('div');
+  rarityLabel.className = 'card-rarity-above';
+  rarityLabel.style.color = r.color;
+  rarityLabel.style.border = `1px solid ${r.color}66`;
+  rarityLabel.textContent = r.label + (card.isFoil ? ' ✨ Foil' : '');
+  wrap.appendChild(rarityLabel);
+
   const el = document.createElement('div');
   el.className = 'big-card' + (card.isFoil ? '' : '');
   el.style.borderColor = r.color;
   el.style.boxShadow = `0 30px 80px ${r.color}44`;
   el.innerHTML = `
-    <div class="big-card-label" style="--label-color:${r.color}">
-      <span class="big-card-label-rarity" style="color:${r.color}">${r.label}${card.isFoil ? ' ✨ Foil' : ''}</span>
-      <span class="big-card-label-ref">${card.ref||''}</span>
-    </div>
     <div class="big-card-face" style="background:linear-gradient(135deg,${r.color}22,${r.color}44)">
       ${card.isFoil ? '<div class="big-card-foil"></div>' : ''}
       ${card.img ? `<img src="${card.img}" alt="${card.name}" loading="lazy" onerror="this.style.display='none'">` : `<span class="fallback">${card.emoji||'🃏'}</span>`}
-      <div class="card-overlay-name">${card.name}</div>
     </div>
   `;
 

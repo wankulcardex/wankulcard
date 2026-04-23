@@ -355,7 +355,7 @@ function renderCards() {
   if (filters.series !== 'all') cards = cards.filter(c => c.seriesId === filters.series);
   if (filters.foil === 'foil') cards = cards.filter(c => c.isFoil);
   else if (filters.foil === 'normal') cards = cards.filter(c => !c.isFoil);
-  else cards = cards.filter(c => !c.isFoil); // Par défaut: pas de foils (trop de doublons)
+  // 'all' = toutes les cartes, foil et non-foil
   if (filters.owned === 'owned') cards = cards.filter(c => c.owned);
   if (filters.owned === 'missing') cards = cards.filter(c => !c.owned);
   if (filters.search) cards = cards.filter(c => c.name.toLowerCase().includes(filters.search));
@@ -415,10 +415,8 @@ function renderCards() {
     container.innerHTML = '';
     const grid = document.createElement('div');
     grid.className = `cards-grid${viewMode === 'list' ? ' list-view' : ''}`;
-    const r_map = {};
-    // RARITIES utilisé directement
     for (const card of cards) {
-      grid.appendChild(buildCard(card, r_map[card.rarity]));
+      grid.appendChild(buildCard(card, RARITIES[card.rarity]));
     }
     container.appendChild(grid);
   }
