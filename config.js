@@ -54,12 +54,12 @@ function drawBooster(sid) {
   const p = POOL[sid] || POOL.origins;
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
   const result = [];
-  result.push({...pick(p.terrain),        slot:'terrain',    isFoil:Math.random()<0.05});
-  for(let i=0;i<4;i++) result.push({...pick(p.commune),     slot:'commune',    isFoil:Math.random()<0.02});
-  for(let i=0;i<3;i++) result.push({...pick(p['peu-commune']),slot:'peu-commune',isFoil:Math.random()<0.04});
+  result.push({...pick(p.terrain),        slot:'terrain',    isFoil:Math.random()<0.05, seriesId:sid});
+  for(let i=0;i<4;i++) result.push({...pick(p.commune),     slot:'commune',    isFoil:Math.random()<0.02, seriesId:sid});
+  for(let i=0;i<3;i++) result.push({...pick(p['peu-commune']),slot:'peu-commune',isFoil:Math.random()<0.04, seriesId:sid});
   const ru=Math.random();
   const rSlot=ru<0.02?'super-rare':ru<0.04?'ultra-rare-holo1':'rare';
-  result.push({...pick(p[rSlot]||p.rare), slot:rSlot, isFoil:ru<0.01});
+  result.push({...pick(p[rSlot]||p.rare), slot:rSlot, isFoil:ru<0.01, seriesId:sid});
   const b=Math.random();
   let bSlot;
   if      (b<0.01)  bSlot='legendaire-or';
@@ -69,7 +69,7 @@ function drawBooster(sid) {
   else if (b<0.22)  bSlot='ultra-rare-holo1';
   else if (b<0.40)  bSlot='super-rare';
   else              bSlot='rare';
-  result.push({...pick(p[bSlot]||p.rare), slot:bSlot, isFoil:b<0.05||Math.random()<0.1, isBig:true});
+  result.push({...pick(p[bSlot]||p.rare), slot:bSlot, isFoil:b<0.05||Math.random()<0.1, isBig:true, seriesId:sid});
   return result;
 }
 
@@ -81,7 +81,7 @@ async function saveCardsToCollection(cards) {
   for(const entry of Object.values(grouped)){
     const existing=await sbFetch(`user_cards?user_id=eq.${user.id}&card_id=eq.${entry.card_id}&select=id,quantity`).catch(()=>[]);
     if(existing&&existing.length>0){await sbFetch(`user_cards?id=eq.${existing[0].id}`,{method:'PATCH',body:JSON.stringify({quantity:existing[0].quantity+entry.quantity})});}
-    else{await sbFetch('user_cards',{method:'POST',body:JSON.stringify({user_id:user.id,card_id:entry.card_id,series:entry.seriesId||sid,rarity:entry.slot,card_name:entry.name,quantity:entry.quantity})});}
+    else{await sbFetch('user_cards',{method:'POST',body:JSON.stringify({user_id:user.id,card_id:entry.card_id,series:entry.seriesId||'unknown',rarity:entry.slot,card_name:entry.name,quantity:entry.quantity})});}
   }
 }
 async function saveBoosterHistory(seriesId,cards){

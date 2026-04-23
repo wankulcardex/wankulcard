@@ -36,12 +36,12 @@
   /* ══════════════════════════════
      ÉCRAN 1 : CHOIX SÉRIE
   ══════════════════════════════ */
-  #screenSelect{min-height:100vh;padding:80px 2rem 4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  #screenSelect{min-height:100vh;padding:80px 2rem 4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
   .sel-title{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:3px;margin:2.5rem 0 .5rem;text-align:center;}
   .sel-title span{color:var(--red);}
   .sel-sub{color:var(--muted);margin-bottom:3rem;font-size:.9rem;}
 
-  .series-grid{display:grid;grid-template-columns:repeat(2,240px);gap:1.5rem;margin:0 auto;}
+  .series-grid{display:grid;grid-template-columns:repeat(2,260px);gap:1.5rem;margin:0 auto;place-items:center;}
   .serie-card{background:var(--card-bg);border:2px solid var(--border);border-radius:20px;overflow:hidden;cursor:pointer;transition:all .3s;position:relative;display:block;text-decoration:none;color:var(--text);}
   .serie-card:hover{transform:translateY(-6px);border-color:var(--sc);box-shadow:0 20px 50px rgba(0,0,0,.5);}
   .serie-img-wrap{height:220px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0a0a0a;position:relative;}
@@ -98,8 +98,8 @@
 
   /* La grande carte centrale */
   .big-card{
-    width:280px;
-    border-radius:20px;
+    width:min(85vw,360px);
+    border-radius:16px;
     overflow:hidden;
     border:3px solid var(--border);
     box-shadow:0 30px 80px rgba(0,0,0,.7);
@@ -107,18 +107,24 @@
     transition:transform .15s;
     animation:cardAppear .4s cubic-bezier(.34,1.56,.64,1);
   }
+  .big-card-label{
+    padding:.5rem .85rem;
+    display:flex;align-items:center;justify-content:space-between;
+    background:rgba(0,0,0,.6);
+    border-bottom:2px solid var(--label-color,#999);
+  }
+  .big-card-label-rarity{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;}
+  .big-card-label-ref{font-size:.7rem;color:rgba(255,255,255,.5);}
   @keyframes cardAppear{
     from{opacity:0;transform:scale(.7) translateY(30px);}
     to{opacity:1;transform:scale(1) translateY(0);}
   }
   .big-card:hover{transform:translateY(-4px) scale(1.02);}
   .big-card:active{transform:scale(.98);}
-  .big-card-face{height:420px;display:flex;align-items:center;justify-content:center;font-size:8rem;position:relative;overflow:hidden;}
+  .big-card-face{height:min(70vw,430px);display:flex;align-items:center;justify-content:center;font-size:8rem;position:relative;overflow:hidden;}
   .big-card-face img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
   .big-card-face .fallback{position:relative;z-index:2;font-size:8rem;}
   .big-card-face .card-emoji{font-size:8rem;position:relative;z-index:2;}
-  .card-overlay-label{position:absolute;top:0;left:0;right:0;z-index:3;padding:.5rem .75rem;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);}
-  .card-overlay-rarity{font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;}
   .card-overlay-name{position:absolute;bottom:0;left:0;right:0;z-index:3;padding:.75rem 1rem;background:linear-gradient(to top,rgba(0,0,0,.85),transparent);font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;}
   .big-card-foil{position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,215,0,.25) 40%,rgba(255,100,200,.25) 50%,rgba(100,200,255,.25) 60%,transparent 80%);animation:foilS 1.5s ease-in-out infinite alternate;}
   @keyframes foilS{from{transform:translateX(-50%)}to{transform:translateX(50%)}}
@@ -404,16 +410,15 @@ function showCard(i) {
   el.style.borderColor = r.color;
   el.style.boxShadow = `0 30px 80px ${r.color}44`;
   el.innerHTML = `
+    <div class="big-card-label" style="--label-color:${r.color}">
+      <span class="big-card-label-rarity" style="color:${r.color}">${r.label}${card.isFoil ? ' ✨ Foil' : ''}</span>
+      <span class="big-card-label-ref">${card.ref||''}</span>
+    </div>
     <div class="big-card-face" style="background:linear-gradient(135deg,${r.color}22,${r.color}44)">
       ${card.isFoil ? '<div class="big-card-foil"></div>' : ''}
-      <div class="card-overlay-label">
-        <span class="card-overlay-rarity" style="color:${r.color}">${r.label}${card.isFoil ? ' ✨' : ''}</span>
-        <span style="font-size:.7rem;color:rgba(255,255,255,.5)">${card.ref||''}</span>
-      </div>
       ${card.img ? `<img src="${card.img}" alt="${card.name}" loading="lazy" onerror="this.style.display='none'">` : `<span class="fallback">${card.emoji||'🃏'}</span>`}
       <div class="card-overlay-name">${card.name}</div>
     </div>
-    <div class="big-card-body"></div>
   `;
 
   // Click pour carte suivante
