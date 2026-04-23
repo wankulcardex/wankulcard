@@ -155,12 +155,12 @@
         <button class="filter-pill" onclick="setFilter('series','origins',this)">Origins</button>
         <button class="filter-pill" onclick="setFilter('series','campus',this)">Campus</button>
         <button class="filter-pill" onclick="setFilter('series','battle',this)">Battle</button>
-        
+        <button class="filter-pill" onclick="setFilter('series','stellar',this)">Stellar</button>
       </div>
       <div class="filter-sep"></div>
       <div class="filter-group">
         <span class="filter-label">Foil</span>
-        <button class="filter-pill active" onclick="setFilter('foil','all',this)">Tous</button>
+        <button class="filter-pill active" onclick="setFilter('foil','all',this)">Sans Foil</button>
         <button class="filter-pill" onclick="setFilter('foil','foil',this)">✨ Foil</button>
         <button class="filter-pill" onclick="setFilter('foil','normal',this)">Normal</button>
       </div>
@@ -346,7 +346,7 @@ function setView(mode, btn) {
 }
 
 // ─── RENDER ────────────────────────────────────────────
-const RARITY_ORDER = ['legendaire','ultra-rare','super-rare','rare','peu-commune','commune'];
+const RARITY_ORDER = ['legendaire-or','legendaire-argent','legendaire-bronze','ultra-rare-holo2','ultra-rare-holo1','super-rare','rare','peu-commune','commune','terrain'];
 
 function renderCards() {
   let cards = [...allCards];
@@ -354,7 +354,8 @@ function renderCards() {
   // Filtres
   if (filters.series !== 'all') cards = cards.filter(c => c.seriesId === filters.series);
   if (filters.foil === 'foil') cards = cards.filter(c => c.isFoil);
-  if (filters.foil === 'normal') cards = cards.filter(c => !c.isFoil);
+  else if (filters.foil === 'normal') cards = cards.filter(c => !c.isFoil);
+  else cards = cards.filter(c => !c.isFoil); // Par défaut: pas de foils (trop de doublons)
   if (filters.owned === 'owned') cards = cards.filter(c => c.owned);
   if (filters.owned === 'missing') cards = cards.filter(c => !c.owned);
   if (filters.search) cards = cards.filter(c => c.name.toLowerCase().includes(filters.search));
@@ -406,7 +407,7 @@ function renderCards() {
       const grid = document.createElement('div');
       grid.className = `cards-grid${viewMode === 'list' ? ' list-view' : ''}`;
       for (const card of group) {
-        grid.appendChild(buildCard(card, r));
+        grid.appendChild(buildCard(card, RARITIES[card.rarity]));
       }
       container.appendChild(grid);
     }
