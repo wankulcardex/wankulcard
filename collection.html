@@ -254,13 +254,13 @@ async function loadCollection() {
   let owned = [];
   try {
     const result = await sbFetch(
-      `user_cards?user_id=eq.${user.id}&select=*&order=created_at.desc`
+      `user_cards?user_id=eq.${user.id}&select=*`
     );
     // Si null = JWT expired, sbFetch a déjà redirigé
     if (result === null) return;
     owned = result || [];
   } catch(e) {
-    console.warn('Impossible de charger depuis Supabase:', e.message);
+    console.warn('Impossible de charger depuis Supabase:', e.message, e);
     // On affiche quand même la collection vide (toutes les cartes comme non-possédées)
   }
 
