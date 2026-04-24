@@ -254,7 +254,7 @@ async function loadCollection() {
   let owned = [];
   try {
     const result = await sbFetch(
-      `user_cards?user_id=eq.${user.id}&select=*`
+      `user_cards?user_id=eq.${user.id}&select=*&order=obtained_at.desc`
     );
     // Si null = JWT expired, sbFetch a déjà redirigé
     if (result === null) return;
@@ -267,7 +267,7 @@ async function loadCollection() {
   // Merge avec possédées
   allCards = allPossible.map(card => {
     const match = owned.find(o => o.card_id === card.key);
-    return { ...card, owned: !!match, quantity: match?.quantity || 0, obtainedAt: match?.created_at || match?.obtained_at };
+    return { ...card, owned: !!match, quantity: match?.quantity || 0, obtainedAt: match?.obtained_at };
   });
 
   renderStats(owned);

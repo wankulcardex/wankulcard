@@ -23,7 +23,10 @@ async function sbFetch(path, options = {}) {
     return null;
   }
   if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.message||`HTTP ${res.status}`); }
-  return res.status === 204 ? null : res.json();
+  if (res.status === 204) return null;
+  const text = await res.text();
+  if (!text || text.trim() === '') return null;
+  try { return JSON.parse(text); } catch(e) { return null; }
 }
 
 const RARITIES = {
@@ -78,12 +81,19 @@ async function saveCardsToCollection(cards) {
   const grouped={};
   for(const c of cards){const key=c.isFoil?`${c.id}-foil`:c.id;if(!grouped[key])grouped[key]={...c,quantity:0,card_id:key};grouped[key].quantity++;}
   for(const entry of Object.values(grouped)){
-    const existing=await sbFetch(`user_cards?user_id=eq.${user.id}&card_id=eq.${entry.card_id}&select=id,quantity`).catch(()=>[]);
-    if(existing&&existing.length>0){await sbFetch(`user_cards?id=eq.${existing[0].id}`,{method:'PATCH',body:JSON.stringify({quantity:existing[0].quantity+entry.quantity})});}
-    else{await sbFetch('user_cards',{method:'POST',body:JSON.stringify({user_id:user.id,card_id:entry.card_id,series:entry.seriesId||'unknown',rarity:entry.slot,card_name:entry.name,quantity:entry.quantity})});}
+    try {
+      const existing=await sbFetch(`user_cards?user_id=eq.${user.id}&card_id=eq.${entry.card_id}&select=id,quantity`).catch(()=>[]);
+      if(existing&&existing.length>0){
+        await sbFetch(`user_cards?id=eq.${existing[0].id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({quantity:existing[0].quantity+entry.quantity})}).catch(e=>console.warn('PATCH user_cards:',e));
+      } else {
+        await sbFetch('user_cards',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({user_id:user.id,card_id:entry.card_id,series:entry.seriesId||'unknown',rarity:entry.slot,card_name:entry.name,quantity:entry.quantity})}).catch(e=>console.warn('POST user_cards:',e));
+      }
+    } catch(e) { console.warn('saveCard error:',e); }
   }
 }
 async function saveBoosterHistory(seriesId,cards){
   const user=getUser();if(!user)return;
-  await sbFetch('booster_history',{method:'POST',body:JSON.stringify({user_id:user.id,series:seriesId,cards})});
+  try {
+    await sbFetch('booster_history',{method:'POST',body:JSON.stringify({user_id:user.id,series:seriesId,cards})});
+  } catch(e) { console.warn('saveBoosterHistory error:',e); }
 }
