@@ -22,10 +22,13 @@ async function sbFetch(path, options = {}) {
     window.location.href = 'index.html';
     return null;
   }
-  if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.message||`HTTP ${res.status}`); }
-  if (res.status === 204) return null;
   const text = await res.text();
-  if (!text || text.trim() === '') return null;
+  if (!res.ok) {
+    let err = {};
+    try { err = JSON.parse(text); } catch(e) {}
+    throw new Error(err.message || err.error || `HTTP ${res.status}`);
+  }
+  if (res.status === 204 || !text || text.trim() === '') return null;
   try { return JSON.parse(text); } catch(e) { return null; }
 }
 
