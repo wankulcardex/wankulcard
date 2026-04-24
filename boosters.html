@@ -506,7 +506,10 @@ async function goToRecap() {
     await saveCardsToCollection(cards.map(c => ({...c, rarity:c.slot, seriesId:selId})));
     await saveBoosterHistory(selId, cards);
     showToast('✅ Collection sauvegardée !');
-  } catch(e) { console.warn(e); }
+  } catch(e) {
+    console.error('Erreur sauvegarde:', e);
+    showToast('⚠️ Erreur sauvegarde: ' + e.message, false);
+  }
 
   show('screenRecap');
   window.scrollTo(0,0);
