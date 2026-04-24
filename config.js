@@ -97,6 +97,6 @@ async function saveCardsToCollection(cards) {
 async function saveBoosterHistory(seriesId,cards){
   const user=getUser();if(!user)return;
   try {
-    await sbFetch('booster_history',{method:'POST',body:JSON.stringify({user_id:user.id,series:seriesId,cards})});
+    await sbFetch('booster_history',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({user_id:user.id,series:seriesId,cards})});
   } catch(e) { console.warn('saveBoosterHistory error:',e); }
 }
