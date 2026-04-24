@@ -160,7 +160,7 @@
       <div class="filter-sep"></div>
       <div class="filter-group">
         <span class="filter-label">Foil</span>
-        <button class="filter-pill active" onclick="setFilter('foil','all',this)">Sans Foil</button>
+        <button class="filter-pill active" onclick="setFilter('foil','normal',this)">Sans Foil</button>
         <button class="filter-pill" onclick="setFilter('foil','foil',this)">✨ Foil</button>
         <button class="filter-pill" onclick="setFilter('foil','normal',this)">Normal</button>
       </div>
@@ -209,7 +209,7 @@
 <script>
 // ─── STATE ─────────────────────────────────────────────
 let allCards = [];
-let filters = { series:'all', foil:'all', owned:'all', search:'', sort:'rarity' };
+let filters = { series:'all', foil:'normal', owned:'all', search:'', sort:'rarity' };
 let viewMode = 'grid';
 
 // ─── INIT ──────────────────────────────────────────────
